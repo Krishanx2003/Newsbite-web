@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import InputField from "../components/InputField";
 import RichTextEditor from "../components/RichTextEditor";
 import ToggleSwitch from "../../_components/ToggleSwitch";
+import { slugify } from "@/lib/utils";
 
 interface FormData {
   title: string;
@@ -30,17 +31,7 @@ interface FormData {
   scheduledDate?: string;
 }
 
-export const slugify = (text: string): string => {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "")
-    .replace(/--+/g, "-")
-    .replace(/^-+/, "")
-    .replace(/-+$/, "");
-};
+
 
 const ArticleForm: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
