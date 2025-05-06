@@ -1,7 +1,9 @@
 // app/page.tsx
 
 import { createClient } from "@/lib/client";
-import { ArticlesByCategory } from "./_components/ArticlesByCategory";
+import { ArticlesByCategory } from "./articles/_components/ArticlesByCategory";
+import { HeroCarousel } from "./articles/_components/HeroCarousel";
+
 
 export default async function Home() {
   const supabase = createClient();
@@ -24,13 +26,8 @@ export default async function Home() {
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       {/* Hero Section */}
-      <section className="mb-16">
-        <h1 className="text-4xl font-serif mb-4">Welcome to Our Blog</h1>
-        <p className="text-xl text-gray-600">
-          Discover insightful articles on various topics
-        </p>
-      </section>
-
+      <HeroCarousel />
+    
       {/* Articles by Category */}
       {categories.map((category) => (
         <ArticlesByCategory

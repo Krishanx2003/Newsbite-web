@@ -32,8 +32,8 @@ export const Navbar = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between py-4">
         {/* Logo */}
         <a href="/" className="text-2xl font-manrope font-bold">
-          <span className="text-gray-900">Vibe</span>
-          <span className="text-gray-700">Check</span>
+          <span className="text-gray-900">pop</span>
+          <span className="text-gray-700">india</span>
         </a>
 
         {/* Desktop Navigation */}

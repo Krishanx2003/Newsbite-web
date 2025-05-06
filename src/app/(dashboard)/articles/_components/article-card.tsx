@@ -24,6 +24,9 @@ interface ArticleCardProps {
 }
 
 const ArticleCard: React.FC<ArticleCardProps> = ({ article, className = "" }) => {
+  // Create unique tags by combining with article ID
+  const uniqueTags = Array.from(new Set(article.tags)).slice(0, 3);
+
   return (
     <Link href={`/articles/${article.id}`} passHref>
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow cursor-pointer overflow-hidden ${className}`}>
@@ -66,11 +69,11 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, className = "" }) =>
             {new Date(article.date).toLocaleDateString()} · {article.read_time}
           </p>
           
-          {/* Tags */}
+          {/* Tags - now with unique keys */}
           <div className="mt-3 flex flex-wrap gap-2">
-            {article.tags.slice(0, 3).map((tag) => (
+            {uniqueTags.map((tag) => (
               <span
-                key={tag}
+                key={`${article.id}-${tag}`}
                 className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full"
               >
                 {tag}

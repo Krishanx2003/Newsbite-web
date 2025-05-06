@@ -110,8 +110,8 @@ const ArticleDetailPage: React.FC = () => {
           Published on {new Date(article.date).toLocaleDateString()} · {article.read_time}
         </p>
         <div
-          className="prose dark:prose-invert mt-10 prose-lg" // Increased font size with prose-lg
-          style={{ color: '#333', fontSize: '1.15rem', lineHeight: '1.7' }} // Added base text color and line height
+          className="prose dark:prose-invert mt-10 prose-lg max-w-none"
+          style={{ color: '#333', fontSize: '1.15rem', lineHeight: '1.7' }}
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 

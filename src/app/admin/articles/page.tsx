@@ -17,6 +17,8 @@ interface Article {
   content: string;
   tags: string[];
   image_url: string;
+  status: "draft" | "publish" | "scheduled";
+  scheduled_date?: string;
 }
 
 const AdminArticlesPage: React.FC = () => {
@@ -56,10 +58,7 @@ const AdminArticlesPage: React.FC = () => {
         throw new Error("Failed to delete article");
       }
 
-      // Remove the deleted article from the list
-      setArticles((prevArticles) =>
-        prevArticles.filter((article) => article.id !== id)
-      );
+      setArticles((prevArticles) => prevArticles.filter((article) => article.id !== id));
 
       toast.success("Article deleted successfully");
     } catch (error) {
@@ -70,7 +69,7 @@ const AdminArticlesPage: React.FC = () => {
 
   // Handle edit article
   const handleEdit = (id: string) => {
-    router.push(`/admin/articles/articlesform/${id}`);
+    router.push(`/admin/articles/articlesform?id=${id}`);
   };
 
   // Handle create new article
@@ -109,6 +108,9 @@ const AdminArticlesPage: React.FC = () => {
                   Date
                 </th>
                 <th className="px-6 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Status
+                </th>
+                <th className="px-6 py-3 border-b-2 border-gray-300 dark:border-gray-600 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Actions
                 </th>
               </tr>
@@ -124,6 +126,21 @@ const AdminArticlesPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
                     {new Date(article.date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
+                    <span
+                      className={`px-2 py-1 rounded ${
+                        article.status === "publish"
+                          ? "bg-green-200 text-green-700 dark:bg-green-800 dark:text-green-200"
+                          : article.status === "scheduled"
+                          ? "bg-blue-200 text-blue-700 dark:bg-blue-800 dark:text-blue-200"
+                          : "bg-yellow-200 text-yellow-700 dark:bg-yellow-800 dark:text-yellow-200"
+                      }`}
+                    >
+                      {article.status === "scheduled" && article.scheduled_date
+                        ? `Scheduled (${new Date(article.scheduled_date).toLocaleDateString()})`
+                        : article.status}
+                    </span>
                   </td>
                   <td className="px-6 py-4 border-b border-gray-300 dark:border-gray-600 text-sm">
                     <button
