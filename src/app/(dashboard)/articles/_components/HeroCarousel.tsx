@@ -57,6 +57,10 @@ export const HeroCarousel = () => {
     );
   };
 
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
   // Auto-advance carousel with proper cleanup
   useEffect(() => {
     // Only set up interval if we have articles to show
@@ -94,63 +98,65 @@ export const HeroCarousel = () => {
   }
 
   return (
-    <div className="relative w-full h-[60vh] sm:h-[70vh] overflow-hidden">
-      {/* Carousel items */}
+    <div className="relative w-full h-[60vh] md:h-[60vh]">
       {articles.map((article, index) => (
-        <div 
+        <div
           key={article.id}
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-            index === currentIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${
+            index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
-          {/* Background image with gradient overlay */}
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${article.image_url})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-off-black/60 to-off-black" />
-          
-          {/* Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex flex-col items-start">
-            <span className="tag bg-electric-purple mb-3">#{article.category}</span>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 max-w-3xl leading-tight">
-              {article.title}
-            </h1>
-            <button 
-              className="btn btn-secondary px-6 py-3"
-              onClick={() => window.location.href = `/articles/${article.id}`}
-            >
-              Read Now
-            </button>
+          <div className="relative h-full w-full">
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4 md:p-8 w-full">
+              <div className={`inline-block mb-3 px-3 py-1 text-xs font-medium rounded-full bg-white text-black`}>
+                {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
+              </div>
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-3 line-clamp-2">
+                {article.title}
+              </h2>
+              <p className="text-white/80 mb-4 hidden md:block">{article.subtitle}</p>
+              <a 
+                href={`/articles/${article.id}`}
+                className="mt-4 inline-block bg-white text-black px-4 py-2 rounded font-medium hover:bg-opacity-90 transition-colors"
+              >
+                Read More
+              </a>
+            </div>
           </div>
         </div>
       ))}
 
       {/* Navigation buttons */}
-      <button 
-        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
+      <button
         onClick={goToPrevious}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-6 h-6 text-white" />
+        <ChevronLeft size={20} />
       </button>
-      <button 
-        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all"
+      <button
         onClick={goToNext}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors z-10"
         aria-label="Next slide"
       >
-        <ChevronRight className="w-6 h-6 text-white" />
+        <ChevronRight size={20} />
       </button>
 
-      {/* Dots indicator */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+      {/* Indicators */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
         {articles.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all ${
-              index === currentIndex ? 'bg-white' : 'bg-white/30'
+            onClick={() => goToSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all ${
+              index === currentIndex ? "bg-white w-6" : "bg-white/50"
             }`}
-            onClick={() => setCurrentIndex(index)}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

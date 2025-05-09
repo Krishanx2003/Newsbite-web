@@ -32,3 +32,5 @@ export interface Article {
   // Add any other optional fields if needed
   [key: string]: any; // This allows for additional properties if your articles vary
 }
+
+export type CategoryType = string;
