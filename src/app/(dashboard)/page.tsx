@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/client";
 import { ArticlesByCategory } from "./articles/_components/ArticlesByCategory";
 import { HeroCarousel } from "./articles/_components/HeroCarousel";
-import { Article } from "@/types/article";
 import CategoryNav from "./articles/_components/CategoryNav";
 import ArticleGrid from "./articles/_components/ArticleGrid";
 

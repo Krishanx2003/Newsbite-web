@@ -1,3 +1,5 @@
+import { Footer } from '@/components/Footer';
+import { Navbar } from '@/components/Navbar';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,9 +14,11 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Add padding-top to the main content to avoid overlap with the fixed Navbar */}
-      <main className="pt-16"> {/* Adjust the padding-top value as needed */}
+      
+      <main className="pt-16"> 
+        <Navbar />
         {children}
+        <Footer />
       </main>
     </div>
   );
