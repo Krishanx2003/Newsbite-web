@@ -1,87 +1,130 @@
-"use client"
-import { useState, useEffect } from 'react';
-import { Search, Menu, X } from 'lucide-react';
+"use client";
+import React, { useState, useEffect } from 'react';
+import { Search, Menu, User, Bell, Moon, Sun } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
 
-export const Navbar = () => {
+const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const categories = [
+    'Tech', 'Culture', 'Politics', 'Environment', 'Entertainment'
+  ];
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
+      ${isScrolled ? 'bg-background/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between py-4">
-        {/* Logo */}
-        <a href="/" className="text-2xl font-manrope font-bold">
-          <span className="text-gray-900">pop</span>
-          <span className="text-gray-700">india</span>
-        </a>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">Home</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">Categories</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">Trending</a>
-          <a href="#" className="text-gray-700 hover:text-gray-900 font-medium">About</a>
-          <button 
-            className="bg-gray-100 hover:bg-gray-200 p-2 rounded-full transition-colors"
-            aria-label="Search"
-          >
-            <Search className="w-5 h-5 text-gray-700" />
-          </button>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center">
-          <button 
-            className="p-2"
-            onClick={toggleMenu}
-            aria-label="Toggle mobile menu"
-          >
-            {isMenuOpen ? <X className="w-6 h-6 text-gray-900" /> : <Menu className="w-6 h-6 text-gray-900" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 animate-accordion-down">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col space-y-4">
-            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium py-2">Home</a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium py-2">Categories</a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium py-2">Trending</a>
-            <a href="#" className="text-gray-700 hover:text-gray-900 font-medium py-2">About</a>
-            
-            <div className="relative mt-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input 
-                type="search" 
-                placeholder="Search..." 
-                className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:border-gray-500 text-gray-900"
-              />
-            </div>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="text-2xl font-bold gradient-text">
+              Vibe<span className="text-neon-green">News</span>
+            </Link>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-10">
+            {categories.map((category) => (
+              <Link 
+                key={category}
+                href={`#${category.toLowerCase()}`}
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                {category}
+              </Link>
+            ))}
+          </nav>
+          
+          {/* Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" size="icon">
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" size="sm">
+              <User className="h-4 w-4 mr-2" />
+              Sign In
+            </Button>
+          </div>
+          
+          {/* Mobile menu button */}
+          <div className="flex md:hidden">
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="mr-2">
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
+              <Menu className="h-6 w-6" />
+            </Button>
           </div>
         </div>
-      )}
+      </div>
+      
+      {/* Mobile menu */}
+      <div 
+        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+          isMobileMenuOpen ? 'max-h-[500px] py-4' : 'max-h-0'
+        } bg-background/95 backdrop-blur-md`}
+      >
+        <div className="container mx-auto px-4 space-y-2">
+          <div className="flex items-center space-x-4 mb-4">
+            <Button variant="ghost" size="icon">
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" size="sm" className="ml-auto">
+              <User className="h-4 w-4 mr-2" />
+              Sign In
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            {categories.map((category) => (
+              <Link 
+                key={category}
+                href={`#${category.toLowerCase()}`}
+                className="px-3 py-2 rounded-md text-sm font-medium bg-muted text-center hover:bg-primary hover:text-white transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {category}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
     </header>
   );
 };
+
+export default Navbar

@@ -3,6 +3,8 @@ import { ArticlesByCategory } from "./articles/_components/ArticlesByCategory";
 import { HeroCarousel } from "./articles/_components/HeroCarousel";
 import CategoryNav from "./articles/_components/CategoryNav";
 import ArticleGrid from "./articles/_components/ArticleGrid";
+import { Button } from "@/components/ui/button";
+import { User } from "lucide-react"; // Make sure to import the User icon
 
 export default async function Home() {
   const supabase = createClient();
@@ -37,14 +39,19 @@ export default async function Home() {
           <HeroCarousel />
         </section>
       )}
+
+      {/* Personalization Card */}
+    
     
       {/* Recent Articles Section */}
       <section className="mb-20">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-          <h2 className="text-3xl font-bold mb-4 md:mb-0">Latest Articles</h2>
-          {categories.length > 0 && (
-            <CategoryNav categories={categories} />
-          )}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold">
+            <span className="gradient-text">Featured Stories</span>
+          </h2>
+          <Button variant="outline" className="border-neon-pink text-neon-pink hover:bg-neon-pink/10">
+            View All
+          </Button>
         </div>
         
         {articles && articles.length > 0 ? (
@@ -75,13 +82,30 @@ export default async function Home() {
               key={category}
               category={category}
               articles={articles || []}
-              // category={category.charAt(0).toUpperCase() + category.slice(1)}
               showViewAll={true}
               gridColumns="3"
             />
           ))}
         </div>
       )}
+
+        <section className="mb-16">
+        <div className="flex flex-col items-center p-6 bg-card rounded-xl border border-neon-blue/20 max-w-md mx-auto">
+          <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+            <User className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">Sign in to personalize your feed</h3>
+          <p className="text-gray-400 text-center mb-6">
+            Get news tailored to your interests and never miss the stories that matter to you.
+          </p>
+          <Button className="w-full bg-neon-blue hover:bg-neon-blue/80 text-white mb-2">
+            Sign In
+          </Button>
+          <Button variant="outline" className="w-full">
+            Pick Your Vibes
+          </Button>
+        </div>
+      </section>
     </main>
   );
 }
