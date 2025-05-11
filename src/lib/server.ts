@@ -1,32 +1,32 @@
-// src/lib/server.ts
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+// src/lib/supabase/server.ts
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function createClient() {
-  const cookieStore = cookies()
-
-  // Create a server's Supabase client with newly configured cookie,
-  // which could be used to maintain the user's session
-  return createServerClient(
+export async function createClient(request?: NextRequest) {
+  const cookieStore = cookies();
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async getAll() {
-          return (await cookieStore).getAll()
+        async get(name: string) {
+          return (await cookieStore).get(name)?.value;
         },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(async ({ name, value, options }) =>
-              (await cookieStore).set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
+        async set(name: string, value: string, options: CookieOptions) {
+          if (request) {
+            request.cookies.set({ name, value, ...options });
           }
+          (await cookieStore).set({ name, value, ...options });
+        },
+        async remove(name: string, options: CookieOptions) {
+          if (request) {
+            request.cookies.set({ name, value: '', ...options });
+          }
+          (await cookieStore).set({ name, value: '', ...options });
         },
       },
     }
-  )
+  );
+  return supabase;
 }
