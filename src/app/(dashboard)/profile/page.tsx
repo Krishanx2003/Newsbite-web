@@ -1,11 +1,10 @@
-// src/app/profile/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/client';
-import { Profile } from '@/types/profile';
 
+import { Profile } from '@/types/profile';
+import { createClient } from '@/lib/client';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -16,28 +15,40 @@ export default function ProfilePage() {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/profile');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile');
-        }
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/profile');
 
-        const data = await response.json();
-        setProfile(data);
-        setDisplayName(data.display_name || '');
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile');
       }
-    };
 
+      const data = await response.json();
+      setProfile(data);
+      setDisplayName(data.display_name || '');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProfile();
-  }, []);
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        router.push('/login');
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [router, supabase]);
 
   const handleSave = async () => {
     if (!displayName.trim()) {
@@ -59,15 +70,14 @@ export default function ProfilePage() {
         throw new Error('Failed to update profile');
       }
 
-      // Create a properly typed updated profile object
       const updatedProfile: Profile = {
-        id: profile?.id || '', // Provide a fallback empty string if id is undefined
+        id: profile?.id || '',
         display_name: displayName,
         avatar_url: profile?.avatar_url || null,
         updated_at: new Date().toISOString(),
         is_new: false,
       };
-      
+
       setProfile(updatedProfile);
       setEditMode(false);
       setError(null);
@@ -91,11 +101,17 @@ export default function ProfilePage() {
     );
   }
 
-  if (error) {
+  if (error && !editMode) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
+          <p>{error}</p>
+          <button
+            onClick={fetchProfile}
+            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     );
