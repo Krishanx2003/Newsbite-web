@@ -4,6 +4,7 @@ import { Search, Menu, User, Bell, Moon, Sun } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -43,7 +44,13 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-2xl font-bold gradient-text">
-              Vibe<span className="text-neon-green">News</span>
+              <Image 
+                src='/brevvy.png'
+                alt="Brevvy Logo"
+                width={120}  // Increased from 80
+                height={220} // Increased from 80
+                className="h-20 w-auto mr-2" // Increased from h-8 and made width auto to maintain aspect ratio
+              />
             </Link>
           </div>
           
@@ -53,7 +60,7 @@ const Navbar: React.FC = () => {
               <Link 
                 key={category}
                 href={`#${category.toLowerCase()}`}
-                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-black hover:text-black px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 {category}
               </Link>
@@ -127,4 +134,4 @@ const Navbar: React.FC = () => {
   );
 };
 
-export default Navbar
+export default Navbar;

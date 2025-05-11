@@ -40,14 +40,15 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, className = "" }) =>
             />
           </div>
         </Link>
-        <span className="absolute top-3 left-3 inline-block px-2 py-1 text-xs font-medium rounded-md bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-          {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
-        </span>
       </div>
-      
+     
       <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <span className="text-xs text-muted-foreground">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+            {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
+          </span>
+       
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             {new Date(article.date).toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric' 
@@ -64,7 +65,6 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article, className = "" }) =>
         <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
           {article.subtitle}
         </p>
-        
       </div>
     </article>
   );
