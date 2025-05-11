@@ -1,21 +1,25 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Search, Menu, User, Bell, Moon, Sun } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Menu, Moon, Sun, ChevronDown, Bell } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/client';
 import { useRouter } from 'next/navigation';
+import { Profile } from '@/types/profile';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Check scroll position
@@ -25,27 +29,55 @@ const Navbar: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
 
-    // Check authentication status
-    const checkAuth = async () => {
+    // Check authentication status and fetch profile
+    const checkAuthAndProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
+      if (session) {
+        try {
+          const response = await fetch('/api/profile');
+          if (response.ok) {
+            const data = await response.json();
+            setProfile(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch profile:', err);
+        }
+      }
     };
 
-    checkAuth();
+    checkAuthAndProfile();
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
+      if (event === 'SIGNED_OUT') {
+        setProfile(null);
+        setIsDropdownOpen(false);
+      } else if (event === 'SIGNED_IN') {
+        checkAuthAndProfile();
+      }
     });
+
+    // Close dropdown on outside click
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       subscription.unsubscribe();
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [supabase]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsDropdownOpen(false);
   };
 
   const toggleTheme = () => {
@@ -56,15 +88,11 @@ const Navbar: React.FC = () => {
     await supabase.auth.signOut();
     router.push('/login');
     setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
   };
 
-  const handleAuthAction = () => {
-    if (isAuthenticated) {
-      handleSignOut();
-    } else {
-      router.push('/login');
-    }
-    setIsMobileMenuOpen(false);
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const categories = [
@@ -115,14 +143,54 @@ const Navbar: React.FC = () => {
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleAuthAction}
-            >
-              <User className="h-4 w-4 mr-2" />
-              {isAuthenticated ? 'Sign Out' : 'Sign In'}
-            </Button>
+            <div className="relative" ref={dropdownRef}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleDropdown}
+                className="flex items-center"
+              >
+                {isAuthenticated && profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Profile"
+                    className="h-6 w-6 rounded-full object-cover mr-2"
+                  />
+                ) : (
+                  <span className="h-6 w-6 rounded-full bg-gray-200 mr-2" />
+                )}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                  {isAuthenticated ? (
+                    <>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           
           {/* Mobile menu button */}
@@ -151,15 +219,60 @@ const Navbar: React.FC = () => {
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="ml-auto"
-              onClick={handleAuthAction}
-            >
-              <User className="h-4 w-4 mr-2" />
-              {isAuthenticated ? 'Sign Out' : 'Sign In'}
-            </Button>
+            <div className="relative ml-auto" ref={dropdownRef}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleDropdown}
+                className="flex items-center"
+              >
+                {isAuthenticated && profile?.avatar_url ? (
+                  <img
+                    src={profile.avatar_url}
+                    alt="Profile"
+                    className="h-6 w-6 rounded-full object-cover mr-2"
+                  />
+                ) : (
+                  <span className="h-6 w-6 rounded-full bg-gray-200 mr-2" />
+                )}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                  {isAuthenticated ? (
+                    <>
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={handleSignOut}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Sign In
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="grid grid-cols-2 gap-2">

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
 import { Profile } from '@/types/profile';
 import { createClient } from '@/lib/client';
 
@@ -14,6 +13,7 @@ export default function ProfilePage() {
   const [editMode, setEditMode] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
 
   const fetchProfile = async () => {
     try {
@@ -36,7 +36,18 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    fetchProfile();
+    // Check user authentication
+    const checkUser = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        router.push('/login');
+        return;
+      }
+      setUser(user);
+      fetchProfile();
+    };
+
+    checkUser();
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -117,6 +128,10 @@ export default function ProfilePage() {
     );
   }
 
+  if (!user) {
+    return null; // Prevent rendering until user is checked
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
@@ -182,7 +197,7 @@ export default function ProfilePage() {
                 <div>
                   <h2 className="text-lg font-medium text-gray-900">Information</h2>
                   <div className="mt-2">
-                    <p className="text-sm text-gray-600">Email: {profile?.id}</p>
+                    <p className="text-sm text-gray-600">Email: {user.email}</p>
                     <p className="text-sm text-gray-600">
                       Display Name: {profile?.display_name || 'Not set'}
                     </p>
@@ -211,7 +226,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {error && !editMode && (
+            {error && editMode && (
               <div className="mt-4 p-3 bg-red-50 border-l-4 border-red-400">
                 <p className="text-sm text-red-700">{error}</p>
               </div>
