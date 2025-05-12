@@ -29,7 +29,7 @@ export default async function Home() {
   // Determine base URL based on environment
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL || "https://your-app-domain.com" // Replace with your production domain
+      ? process.env.NEXT_PUBLIC_API_URL || "https://pop-roan.vercel.app" // Replace with your production domain
       : "http://localhost:3000";
 
   // Construct absolute URL for the API
