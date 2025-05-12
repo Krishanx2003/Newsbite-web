@@ -1,6 +1,6 @@
 // /admin/articles/articlesform/page.tsx
 import { Suspense } from 'react';
-import ArticleForm from '../../_components/form';
+import ArticleForm from '../components/form';
 
 export default function ArticleFormPage() {
   return (

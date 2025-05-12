@@ -7,8 +7,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputField from "./InputField";
 import RichTextEditor from "./RichTextEditor";
-import ToggleSwitch from "./ToggleSwitch";
+
 import { slugify } from "@/lib/utils";
+import ToggleSwitch from "./ToggleSwitch";
 
 interface FormData {
   title: string;
