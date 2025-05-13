@@ -1,8 +1,15 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/server';
 import Link from 'next/link';
+import type { NextPage } from 'next';
 
-export default async function CategoryPage({ params }: { params: { id: string } }) {
+// Define the props type explicitly
+interface CategoryPageProps {
+  params: { id: string };
+}
+
+// Use NextPage type for the component
+const CategoryPage: NextPage<CategoryPageProps> = async ({ params }) => {
   const supabase = await createClient();
   const { data: category, error } = await supabase
     .from('categories')
@@ -23,4 +30,6 @@ export default async function CategoryPage({ params }: { params: { id: string } 
       </Link>
     </div>
   );
-}
+};
+
+export default CategoryPage;
