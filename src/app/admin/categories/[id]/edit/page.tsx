@@ -2,8 +2,13 @@ import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/server';
 import CategoryForm from '../../_components/CategoryForm';
 
-// Explicitly avoid NextPage to bypass type inference
-export default async function EditCategory({ params }: { params: { id: string } }) {
+interface EditCategoryPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function EditCategory({ params }: EditCategoryPageProps) {
   const supabase = await createClient();
   const { data: category, error } = await supabase
     .from('categories')
