@@ -1,6 +1,3 @@
-
-// src/app/api/profile/route.ts
-
 import { createClient } from '@/lib/server';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -14,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('id, display_name, avatar_url, updated_at')
+    .select('id, display_name, avatar_url, updated_at, role')
     .eq('id', user.id)
     .single();
 
@@ -30,6 +27,7 @@ export async function GET(request: NextRequest) {
         display_name: null,
         avatar_url: user.user_metadata?.avatar_url || null,
         updated_at: null,
+        role: 'user',
         is_new: true,
       },
       { status: 200 }
