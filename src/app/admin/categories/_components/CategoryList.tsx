@@ -12,7 +12,7 @@ export default function CategoryList({ categories }: CategoryListProps) {
       {categories.map((category) => (
         <div key={category.id} className="p-4 border rounded">
           <h3 className="font-bold">{category.name}</h3>
-          <Link href={`/admin/categories/${category.id}/edit`} className="text-blue-500">
+          <Link href={`/admin/categories/${category.id}`} className="text-blue-500">
             Edit
           </Link>
         </div>
