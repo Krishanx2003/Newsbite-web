@@ -1,20 +1,21 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/server';
 import Link from 'next/link';
-import type { NextPage } from 'next';
 
-// Define the props type explicitly
+// Define the props type with params as a Promise
 interface CategoryPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-// Use NextPage type for the component
-const CategoryPage: NextPage<CategoryPageProps> = async ({ params }) => {
+export default async function CategoryPage({ params }: CategoryPageProps) {
+  // Resolve the params Promise
+  const { id } = await params;
+
   const supabase = await createClient();
   const { data: category, error } = await supabase
     .from('categories')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !category) {
@@ -30,6 +31,4 @@ const CategoryPage: NextPage<CategoryPageProps> = async ({ params }) => {
       </Link>
     </div>
   );
-};
-
-export default CategoryPage;
+}
