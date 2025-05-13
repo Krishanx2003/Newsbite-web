@@ -1,13 +1,9 @@
-import type { NextPage } from 'next';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/server';
 import CategoryForm from '../../_components/CategoryForm';
 
-interface PageProps {
-  params: { id: string };
-}
-
-const EditCategory: NextPage<PageProps> = async ({ params }) => {
+// Explicitly avoid NextPage to bypass type inference
+export default async function EditCategory({ params }: { params: { id: string } }) {
   const supabase = await createClient();
   const { data: category, error } = await supabase
     .from('categories')
@@ -25,6 +21,4 @@ const EditCategory: NextPage<PageProps> = async ({ params }) => {
       <CategoryForm category={category} />
     </div>
   );
-};
-
-export default EditCategory;
+}
