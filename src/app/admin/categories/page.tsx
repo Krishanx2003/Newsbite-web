@@ -1,24 +1,13 @@
-import { createClient } from '@/lib/server';
-import Link from 'next/link';
-import CategoryList from './_components/CategoryList';
+import CategoryForm from "./_components/CategoryForm";
+import CategoryList from "./_components/CategoryList";
 
-
-export default async function CategoriesAdmin() {
-  const supabase = createClient();
-  const { data: categories } = await (await supabase)
-    .from('categories')
-    .select('*')
-    .order('name', { ascending: true });
-
+export default function CategoriesPage() {
   return (
-    <div>
-      <div className="flex justify-between mb-4">
-        <h2 className="text-xl">Categories</h2>
-        <Link href="/admin/categories/create" className="p-2 bg-blue-500 text-white rounded">
-          Create Category
-        </Link>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <CategoryForm />
+        <CategoryList />
       </div>
-      <CategoryList categories={categories || []} />
     </div>
   );
 }
