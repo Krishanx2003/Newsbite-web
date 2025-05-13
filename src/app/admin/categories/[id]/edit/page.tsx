@@ -1,8 +1,13 @@
+import type { NextPage } from 'next';
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/server';
 import CategoryForm from '../../_components/CategoryForm';
 
-export default async function EditCategory({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: { id: string };
+}
+
+const EditCategory: NextPage<PageProps> = async ({ params }) => {
   const supabase = await createClient();
   const { data: category, error } = await supabase
     .from('categories')
@@ -20,4 +25,6 @@ export default async function EditCategory({ params }: { params: { id: string } 
       <CategoryForm category={category} />
     </div>
   );
-}
+};
+
+export default EditCategory;
