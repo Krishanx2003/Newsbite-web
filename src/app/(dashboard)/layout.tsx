@@ -4,8 +4,8 @@ import Navbar from '@/components/Navbar';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Inflo - Dashboard',
-  description: 'Dashboard area of Inflo application',
+  title: 'Brevvy',
+  description: 'News that matters. Insights that drive action.',
 };
 
 export default function DashboardLayout({

@@ -1,4 +1,3 @@
-// components/ArticlesByCategory.tsx
 "use client";
 
 import { ChevronRight } from "lucide-react";
@@ -36,13 +35,15 @@ export function ArticlesByCategory({
   }[gridColumns];
 
   return (
-    <section className={`mb-12 ${className}`}>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-serif capitalize">{category}</h2>
+    <section className={`mb-20 ${className}`}>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl md:text-3xl font-montserrat font-bold text-gray-800 dark:text-gray-200 capitalize">
+          {category}
+        </h2>
         {showViewAll && (
           <Link
             href={`/articles?category=${encodeURIComponent(category)}`}
-            className="text-orange-600 hover:text-orange-700 flex items-center transition-colors"
+            className="text-coral-500 hover:text-coral-500/80 font-inter font-medium flex items-center transition-transform duration-200 hover:scale-105"
             aria-label={`View all ${category} articles`}
           >
             View All <ChevronRight className="h-4 w-4 ml-1" />
@@ -52,9 +53,10 @@ export function ArticlesByCategory({
 
       <div className={`grid grid-cols-1 gap-6 ${gridClass}`}>
         {filteredArticles.map((article) => (
-          <ArticleCard 
-            key={`${category}-${article.id}`} 
-            article={article as Article} // Explicit type assertion if needed
+          <ArticleCard
+            key={`${category}-${article.id}`}
+            article={article as Article}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 max-w-sm mx-auto transition-opacity duration-300 hover:shadow-lg"
           />
         ))}
       </div>

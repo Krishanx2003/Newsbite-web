@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { FaMoon, FaSun, FaArrowLeft } from 'react-icons/fa';
 import { createClient } from '@/lib/client';
+import sanitizeHtml from 'sanitize-html';
 
 interface News {
   id: string;
@@ -19,10 +20,43 @@ interface News {
   author_id: string;
 }
 
+interface Poll {
+  id: string;
+  question: string;
+  category: string | null;
+  created_at: string;
+  expires_at: string | null;
+  is_active: boolean;
+  show_results_before_voting: boolean;
+  target_audience: string | null;
+  attached_news_id: string | null;
+  total_votes: number;
+}
+
+interface PollOption {
+  id: string;
+  poll_id: string;
+  option_text: string;
+  vote_count: number;
+}
+
+interface PollVote {
+  id: string;
+  poll_id: string;
+  option_id: string;
+  user_id: string;
+}
+
 export default function NewsDetailPage() {
   const [news, setNews] = useState<News | null>(null);
+  const [poll, setPoll] = useState<Poll | null>(null);
+  const [pollOptions, setPollOptions] = useState<PollOption[]>([]);
+  const [userVote, setUserVote] = useState<PollVote | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [pollLoading, setPollLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pollError, setPollError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
   const { id } = useParams();
@@ -40,12 +74,10 @@ export default function NewsDetailPage() {
       setError(null);
 
       try {
-        // Validate id
         if (!id || typeof id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
           throw new Error('Invalid news ID');
         }
 
-        // Fetch news by id
         const { data, error } = await supabase
           .from('news')
           .select('id, title, content, category, created_at, updated_at, published_at, is_published, author_id')
@@ -56,7 +88,6 @@ export default function NewsDetailPage() {
           throw new Error('News not found');
         }
 
-        // Only show published news to non-authenticated users
         if (!data.is_published) {
           const { data: { user } } = await supabase.auth.getUser();
           if (!user || user.id !== data.author_id) {
@@ -71,10 +102,13 @@ export default function NewsDetailPage() {
         setIsLoading(false);
       }
     };
+
     if (id) {
       fetchNews();
     }
   }, [id, supabase]);
+
+ 
 
   if (isLoading) {
     return (
@@ -96,6 +130,11 @@ export default function NewsDetailPage() {
       </div>
     );
   }
+
+  const sanitizedContent = sanitizeHtml(news.content, {
+    allowedTags: ['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'a', 'strong', 'em', 'img'],
+    allowedAttributes: { a: ['href', 'target'], img: ['src', 'alt'] },
+  });
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'} transition-colors duration-300`}>
@@ -132,28 +171,34 @@ export default function NewsDetailPage() {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
         <article className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="relative h-96 mb-6">
+            <Image
+              src="/placeholder.jpg"
+              alt={news.title}
+              fill
+              className="object-cover rounded-lg"
+              sizes="100vw"
+            />
+          </div>
           <div className="mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Published: {news.published_at
+                ? new Date(news.published_at).toLocaleDateString()
+                : 'Not published'}
+            </p>
             {news.category && (
-              <span className="px-2 py-1 bg+ bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-xs">
+              <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-/indigo-800 dark:text-indigo-200 rounded-full text-xs">
                 {news.category}
               </span>
             )}
           </div>
           <div
             className="prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: news.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
-        </article>
-      </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-200 dark:bg-gray-800 py-4 mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            © 2025 News Polls. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        </article>
+        </main>
     </div>
   );
 }

@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(profiles || [], { status: 200 });
 }
+
 export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -60,6 +61,7 @@ export async function PATCH(request: NextRequest) {
         display_name: display_name.trim(),
         avatar_url: user.user_metadata?.avatar_url || null,
         updated_at: new Date().toISOString(),
+        role: user.user_metadata?.role || 'user', // Ensure role is set
       },
       { onConflict: 'id' }
     );
@@ -68,5 +70,5 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ message: 'Profile created/updated successfully' }, { status: 200 });
+  return NextResponse.json({ message: 'Profile updated successfully' }, { status: 200 });
 }

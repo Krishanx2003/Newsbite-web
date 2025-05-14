@@ -104,13 +104,13 @@ const Navbar: React.FC = () => {
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
-      ${isScrolled ? 'bg-background/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}
+      ${isScrolled ? 'bg-off-white/90 dark:bg-near-black/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-bold gradient-text">
+            <Link href="/" className="text-2xl font-montserrat font-bold text-blue-600">
               <Image 
                 src='/brevvy.png'
                 alt="Brevvy Logo"
@@ -127,7 +127,7 @@ const Navbar: React.FC = () => {
               <Link 
                 key={category}
                 href={`#${category.toLowerCase()}`}
-                className="text-black hover:text-black px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                className="text-gray-800 dark:text-gray-200 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-inter font-medium transition-colors"
               >
                 {category}
               </Link>
@@ -136,13 +136,26 @@ const Navbar: React.FC = () => {
           
           {/* Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme}
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               <Bell className="h-5 w-5" />
             </Button>
             <div className="relative" ref={dropdownRef}>
@@ -150,7 +163,7 @@ const Navbar: React.FC = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={toggleDropdown}
-                className="flex items-center"
+                className="flex items-center border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
               >
                 {isAuthenticated && profile?.avatar_url ? (
                   <img
@@ -164,18 +177,18 @@ const Navbar: React.FC = () => {
                 <ChevronDown className="h-4 w-4" />
               </Button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md py-1 z-50">
                   {isAuthenticated ? (
                     <>
                       <button
                         onClick={() => handleLinkClick('/profile')}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                       >
                         Profile
                       </button>
                       <button
                         onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                       >
                         Sign Out
                       </button>
@@ -183,7 +196,7 @@ const Navbar: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => handleLinkClick('/login')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                     >
                       Sign In
                     </button>
@@ -195,10 +208,20 @@ const Navbar: React.FC = () => {
           
           {/* Mobile menu button */}
           <div className="flex md:hidden">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="mr-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleTheme}
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 mr-2 transition-transform duration-200 hover:scale-105"
+            >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleMobileMenu}
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               <Menu className="h-6 w-6" />
             </Button>
           </div>
@@ -209,14 +232,22 @@ const Navbar: React.FC = () => {
       <div 
         className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
           isMobileMenuOpen ? 'max-h-[500px] py-4' : 'max-h-0'
-        } bg-background/95 backdrop-blur-md`}
+        } bg-off-white/95 dark:bg-near-black/95 backdrop-blur-md`}
       >
         <div className="container mx-auto px-4 space-y-2">
           <div className="flex items-center space-x-4 mb-4">
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+            >
               <Bell className="h-5 w-5" />
             </Button>
             <div className="relative ml-auto" ref={dropdownRef}>
@@ -224,7 +255,7 @@ const Navbar: React.FC = () => {
                 variant="outline" 
                 size="sm" 
                 onClick={toggleDropdown}
-                className="flex items-center"
+                className="flex items-center border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
               >
                 {isAuthenticated && profile?.avatar_url ? (
                   <img
@@ -238,18 +269,18 @@ const Navbar: React.FC = () => {
                 <ChevronDown className="h-4 w-4" />
               </Button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md py-1 z-50">
                   {isAuthenticated ? (
                     <>
                       <button
                         onClick={() => handleLinkClick('/profile')}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                       >
                         Profile
                       </button>
                       <button
                         onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                       >
                         Sign Out
                       </button>
@@ -257,7 +288,7 @@ const Navbar: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => handleLinkClick('/login')}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
                     >
                       Sign In
                     </button>
@@ -272,7 +303,7 @@ const Navbar: React.FC = () => {
               <Link 
                 key={category}
                 href={`#${category.toLowerCase()}`}
-                className="px-3 py-2 rounded-md text-sm font-medium bg-muted text-center hover:bg-primary hover:text/white transition-colors"
+                className="px-3 py-2 rounded-md text-sm font-inter font-medium bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white text-center transition-transform duration-200 hover:scale-105"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {category}
@@ -284,5 +315,4 @@ const Navbar: React.FC = () => {
     </header>
   );
 };
-
 export default Navbar;

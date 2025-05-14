@@ -1,3 +1,4 @@
+
 import ArticleGrid from "./articles/_components/ArticleGrid";
 import { ArticlesByCategory } from "./articles/_components/ArticlesByCategory";
 import { HeroCarousel } from "./articles/_components/HeroCarousel";
@@ -45,8 +46,8 @@ export default async function Home() {
     if (!response.ok) {
       console.error("Error fetching articles:", response.status, response.statusText);
       return (
-        <div className="text-center py-12">
-          <p className="text-red-500">Error loading articles: {response.statusText}</p>
+        <div className="text-center py-12 text-coral-500 font-inter">
+          <p>Error loading articles: {response.statusText}</p>
         </div>
       );
     }
@@ -56,8 +57,8 @@ export default async function Home() {
   } catch (error) {
     console.error("Fetch error:", error);
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">Unable to connect to the server. Please try again later.</p>
+      <div className="text-center py-12 text-coral-500 font-inter">
+        <p>Unable to connect to the server. Please try again later.</p>
       </div>
     );
   }
@@ -76,29 +77,34 @@ export default async function Home() {
     .slice(0, 3);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200">
       {/* Hero Section */}
       <section className="mb-16">
-        <HeroCarousel articles={featuredArticles} />
+        <HeroCarousel
+          articles={featuredArticles}
+       
+        />
       </section>
 
       {/* Personalization Card */}
       <section className="mb-16">
-        <div className="flex flex-col items-center p-6 bg-card rounded-xl border border-neon-blue/20 max-w-md mx-auto">
-          <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-            <User className="h-8 w-8 text-primary" />
+        <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-blue-600/20 max-w-md mx-auto transition-opacity duration-300">
+          <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center mb-4">
+            <User className="h-8 w-8 text-blue-600" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h3 className="text-lg font-montserrat font-bold text-gray-800 dark:text-gray-200 mb-2">
             Sign in to personalize your feed
           </h3>
-          <p className="text-gray-400 text-center mb-6">
-            Get news tailored to your interests and never miss the stories that
-            matter to you.
+          <p className="text-base font-inter text-gray-700 dark:text-gray-300 text-center mb-6">
+            Get news tailored to your interests and never miss the stories that matter to you.
           </p>
-          <Button className="w-full bg-neon-blue hover:bg-neon-blue/80 text-white mb-2">
+          <Button className="w-full bg-blue-600 hover:bg-blue-600/80 text-white font-fredoka rounded-md px-4 py-2 mb-2 transition-transform duration-200 hover:scale-105">
             Sign In
           </Button>
-          <Button variant="outline" className="w-full">
+          <Button
+            variant="outline"
+            className="w-full border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
+          >
             Pick Your Vibes
           </Button>
         </div>
@@ -107,22 +113,25 @@ export default async function Home() {
       {/* Recent Articles Section */}
       <section className="mb-20">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">
-            <span className="gradient-text">Featured Stories</span>
+          <h2 className="text-2xl md:text-3xl font-montserrat font-bold text-gray-800 dark:text-gray-200">
+            Featured Stories
           </h2>
           <Button
             variant="outline"
-            className="border-neon-pink text-neon-pink hover:bg-neon-pink/10"
+            className="border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
           >
             View All
           </Button>
         </div>
 
         {articles.length > 0 ? (
-          <ArticleGrid articles={articles.slice(0, 6)} />
+          <ArticleGrid
+            articles={articles.slice(0, 6)}
+           
+          />
         ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No articles found</p>
+          <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-inter">
+            <p>No articles found</p>
           </div>
         )}
 
@@ -130,7 +139,7 @@ export default async function Home() {
           <div className="mt-10 text-center">
             <a
               href="/articles"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-600/80 text-white font-fredoka rounded-md transition-transform duration-200 hover:scale-105"
             >
               View All Articles
             </a>
@@ -150,6 +159,7 @@ export default async function Home() {
               )}
               showViewAll={true}
               gridColumns="3"
+            
             />
           ))}
         </div>
