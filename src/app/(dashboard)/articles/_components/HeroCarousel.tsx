@@ -1,98 +1,65 @@
 "use client";
+
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Type definitions based on your API schema
 type Article = {
-  id: number;
+  id: string;
   title: string;
   subtitle: string;
   image_url: string;
+  image_alt_text?: string;
   category: string;
   slug: string;
   status: "draft" | "publish" | "scheduled";
 };
 
-export const HeroCarousel = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // Fetch published articles from API
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/article');
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch articles');
-        }
-        
-        const data = await response.json();
-        // Filter to get at most 5 articles for the carousel
-        const featuredArticles = data.slice(0, 5);
-        setArticles(featuredArticles);
-      } catch (err) {
-        setError('Error loading featured articles');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchArticles();
-  }, []);
+interface HeroCarouselProps {
+  articles: Article[] | undefined;
+}
 
+export const HeroCarousel = ({ articles = [] }: HeroCarouselProps) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === articles.length - 1 ? 0 : prevIndex + 1
-    );
+    if (articles.length > 0) {
+      setCurrentIndex((prevIndex) => 
+        prevIndex === articles.length - 1 ? 0 : prevIndex + 1
+      );
+    }
   };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? articles.length - 1 : prevIndex - 1
-    );
+    if (articles.length > 0) {
+      setCurrentIndex((prevIndex) => 
+        prevIndex === 0 ? articles.length - 1 : prevIndex - 1
+      );
+    }
   };
 
   const goToSlide = (index: number) => {
-    setCurrentIndex(index);
+    if (articles.length > 0 && index < articles.length) {
+      setCurrentIndex(index);
+    }
   };
 
-  // Auto-advance carousel with proper cleanup
+  // Auto-advance carousel
   useEffect(() => {
-    // Only set up interval if we have articles to show
     if (articles.length > 0) {
-      // Create interval that advances to next slide every 5 seconds
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => 
           prevIndex === articles.length - 1 ? 0 : prevIndex + 1
         );
       }, 5000);
       
-      // Clean up interval on component unmount or when dependencies change
-      return () => {
-        clearInterval(interval);
-      };
+      return () => clearInterval(interval);
     }
-  }, [articles.length]); // Only re-run if number of articles changes
+  }, [articles]); // Depend on articles array, not articles.length
 
-  // Show loading state
-  if (loading) {
+  if (articles.length === 0) {
     return (
       <div className="w-full h-[60vh] flex items-center justify-center bg-gray-900">
-        <div className="text-white">Loading featured articles...</div>
-      </div>
-    );
-  }
-
-  // Show error state
-  if (error || articles.length === 0) {
-    return (
-      <div className="w-full h-[60vh] flex items-center justify-center bg-gray-900">
-        <div className="text-white">{error || 'No featured articles available'}</div>
+        <div className="text-white">No featured articles available</div>
       </div>
     );
   }
@@ -109,7 +76,7 @@ export const HeroCarousel = () => {
           <div className="relative h-full w-full">
             <img
               src={article.image_url}
-              alt={article.title}
+              alt={article.image_alt_text || article.title}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />

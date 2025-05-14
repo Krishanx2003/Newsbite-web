@@ -29,13 +29,13 @@ export default async function Home() {
   // Determine base URL based on environment
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL || "https://pop-roan.vercel.app" // Replace with your production domain
+      ? process.env.NEXT_PUBLIC_API_URL || "https://pop-roan.vercel.app"
       : "http://localhost:3000";
 
   // Construct absolute URL for the API
-  const apiUrl = `${baseUrl}/api/article?status=publish`;
+  const apiUrl = `${baseUrl}/api/articles?status=publish`;
 
-  // Fetch published articles
+  // Initialize articles as an empty array
   let articles: Article[] = [];
   try {
     const response = await fetch(apiUrl, {
@@ -43,15 +43,16 @@ export default async function Home() {
     });
 
     if (!response.ok) {
-      console.error("Error fetching articles:", response.statusText);
+      console.error("Error fetching articles:", response.status, response.statusText);
       return (
         <div className="text-center py-12">
-          <p className="text-red-500">Error loading articles. Please try again later.</p>
+          <p className="text-red-500">Error loading articles: {response.statusText}</p>
         </div>
       );
     }
 
-    articles = await response.json();
+    const data = await response.json();
+    articles = Array.isArray(data.articles) ? data.articles : [];
   } catch (error) {
     console.error("Fetch error:", error);
     return (
@@ -63,31 +64,23 @@ export default async function Home() {
 
   // Get unique categories from published articles
   const categories = Array.from(
-    new Set(articles?.map((article: Article) => article.category) || [])
+    new Set(articles.map((article: Article) => article.category))
   );
 
   // Get featured articles for the hero carousel (first 3 published articles with images)
   const featuredArticles = articles
-    ?.filter(
+    .filter(
       (article: Article) =>
         article.status === "publish" && article.image_url && article.image_alt_text
     )
-    .slice(0, 3) || [];
+    .slice(0, 3);
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero Section */}
-      {featuredArticles.length > 0 ? (
-        <section className="mb-16">
-          <HeroCarousel />
-        </section>
-      ) : (
-        <section className="mb-16">
-          <p className="text-center text-muted-foreground">
-            No featured articles available.
-          </p>
-        </section>
-      )}
+      <section className="mb-16">
+        <HeroCarousel articles={featuredArticles} />
+      </section>
 
       {/* Personalization Card */}
       <section className="mb-16">
@@ -125,7 +118,7 @@ export default async function Home() {
           </Button>
         </div>
 
-        {articles && articles.length > 0 ? (
+        {articles.length > 0 ? (
           <ArticleGrid articles={articles.slice(0, 6)} />
         ) : (
           <div className="text-center py-12">
@@ -133,7 +126,7 @@ export default async function Home() {
           </div>
         )}
 
-        {articles && articles.length > 6 && (
+        {articles.length > 6 && (
           <div className="mt-10 text-center">
             <a
               href="/articles"

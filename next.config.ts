@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
       'yewcyueutwdgcbmfxjel.supabase.co', // Supabase domain
       'example.com',
       'images.unsplash.com',
-      'pyktyyjoyfaprsvkuvzh.supabase.co'
+      'pyktyyjoyfaprsvkuvzh.supabase.co',
+      'lh3.googleusercontent.com',
      
     ],
   },
