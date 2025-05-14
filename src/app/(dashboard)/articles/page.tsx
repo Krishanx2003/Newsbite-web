@@ -6,19 +6,27 @@ import Link from 'next/link';
 import { FaMoon, FaSun, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Image from 'next/image';
 
+// Define Article type matching API schema
 interface Article {
   id: string;
   title: string;
   subtitle: string;
   slug: string;
   image_url: string;
-  image_alt_text: string;
+  image_alt_text?: string;
   category: string;
   tags: string[];
   date: string;
   read_time: string;
   author_name: string;
   author_avatar: string;
+}
+
+// Define API response type
+interface ArticlesResponse {
+  articles: Article[];
+  totalPages: number;
+  currentPage: number;
 }
 
 export default function ArticlesPage() {
@@ -54,12 +62,18 @@ export default function ArticlesPage() {
         if (!response.ok) {
           throw new Error(`Failed to fetch articles: ${response.status}`);
         }
-        const data = await response.json();
-        setArticles(data.articles || []);
+        const data: ArticlesResponse = await response.json();
+        
+        // Validate response
+        if (!Array.isArray(data.articles)) {
+          throw new Error('Invalid response: articles is not an array');
+        }
+
+        setArticles(data.articles);
         setTotalPages(data.totalPages || 1);
 
         // Extract unique categories
-        const uniqueCategories = [...new Set(data.articles.map((a: Article) => a.category))];
+        const uniqueCategories = [...new Set(data.articles.map((a) => a.category))];
         setCategories(uniqueCategories);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load articles');
@@ -180,14 +194,14 @@ export default function ArticlesPage() {
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {article.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                 {article.tags.slice(0, 3).map((tag, index) => (
+  <span
+    key={`${tag}-${index}`}
+    className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-xs"
+  >
+    {tag}
+  </span>
+))}
                 </div>
               </div>
             </Link>
