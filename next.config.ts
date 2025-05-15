@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       'images.unsplash.com',
       'pyktyyjoyfaprsvkuvzh.supabase.co',
       'lh3.googleusercontent.com',
+      'via.placeholder.com',
      
     ],
   },

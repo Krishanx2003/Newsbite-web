@@ -146,7 +146,7 @@ export default function ArticlesPage() {
             <div className="relative w-full md:w-96 h-64 rounded-xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-blue-900 opacity-40 z-10 rounded-xl"></div>
               <Image 
-                src="/images/blog-hero.jpg" 
+                src="/articlemockup.png" 
                 alt="Blog hero image"
                 fill
                 className="object-cover"
