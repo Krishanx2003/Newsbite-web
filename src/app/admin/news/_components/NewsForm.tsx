@@ -12,6 +12,8 @@ export default function NewsForm() {
   const [category, setCategory] = useState('');
   const [isPublished, setIsPublished] = useState(false);
   const [publishedAt, setPublishedAt] = useState('');
+  const [imageUrl, setImageUrl] = useState(''); // For manual URL input
+  const [imageFile, setImageFile] = useState<File | null>(null); // For file upload
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -32,6 +34,17 @@ export default function NewsForm() {
     fetchCategories();
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+    if (file) setImageUrl(''); // Clear URL input if a file is selected
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value);
+    if (e.target.value) setImageFile(null); // Clear file input if a URL is provided
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -39,18 +52,24 @@ export default function NewsForm() {
     setIsLoading(true);
 
     try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('content', content);
+      formData.append('category', category || '');
+      formData.append('is_published', isPublished.toString());
+      if (isPublished && publishedAt) {
+        formData.append('published_at', publishedAt);
+      }
+      if (imageUrl) {
+        formData.append('image_url', imageUrl);
+      }
+      if (imageFile) {
+        formData.append('image_file', imageFile);
+      }
+
       const response = await fetch('/api/news', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          category: category || null,
-          is_published: isPublished,
-          published_at: isPublished && publishedAt ? publishedAt : null,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -65,6 +84,8 @@ export default function NewsForm() {
       setCategory('');
       setIsPublished(false);
       setPublishedAt('');
+      setImageUrl('');
+      setImageFile(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -75,7 +96,7 @@ export default function NewsForm() {
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Create News</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Title
@@ -126,6 +147,35 @@ export default function NewsForm() {
         </div>
 
         <div>
+          <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">
+            Image URL (Optional)
+          </label>
+          <input
+            type="url"
+            id="image_url"
+            value={imageUrl}
+            onChange={handleUrlChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            placeholder="Enter image URL"
+            disabled={!!imageFile} // Disable if a file is selected
+          />
+        </div>
+
+        <div>
+          <label htmlFor="image_file" className="block text-sm font-medium text-gray-700">
+            Upload Image (Optional)
+          </label>
+          <input
+            type="file"
+            id="image_file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+            disabled={!!imageUrl} // Disable if a URL is provided
+          />
+        </div>
+
+        <div>
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -152,12 +202,8 @@ export default function NewsForm() {
           </div>
         )}
 
-        {error && (
-          <div className="text-red-500 text-sm">{error}</div>
-        )}
-        {success && (
-          <div className="text-green-500 text-sm">{success}</div>
-        )}
+        {error && <div className="text-red-500 text-sm">{error}</div>}
+        {success && <div className="text-green-500 text-sm">{success}</div>}
 
         <button
           type="submit"

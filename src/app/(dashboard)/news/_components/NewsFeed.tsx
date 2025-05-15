@@ -45,7 +45,7 @@ const PaginationDots: React.FC<{
   </div>
 );
 
-// Define News type
+// Define News type (aligned with database schema)
 interface News {
   id: string;
   title: string;
@@ -56,7 +56,7 @@ interface News {
   published_at: string | null;
   is_published: boolean;
   author_id: string;
-  image?: string;
+  image_url: string | null; // Changed from `image` to `image_url`
   timeAgo?: string;
 }
 
@@ -98,7 +98,7 @@ const NewsFeed: React.FC = () => {
           throw new Error('Invalid response: news is not an array');
         }
 
-        // Add timeAgo and fallback image
+        // Format news items with timeAgo
         const formattedNews = data.map((item) => ({
           ...item,
           timeAgo: new Date(item.published_at || item.created_at).toLocaleDateString('en-US', {
@@ -106,7 +106,7 @@ const NewsFeed: React.FC = () => {
             day: 'numeric',
             year: 'numeric',
           }),
-          image: item.image || 'https://via.placeholder.com/400x300?text=News+Image',
+          image_url: item.image_url || null, // Use image_url directly
         }));
 
         let filteredNews = formattedNews.filter((item) => item.is_published);
@@ -308,7 +308,9 @@ const NewsFeed: React.FC = () => {
               </Button>
               <Button
                 onClick={goToNextArticle}
-                disabled={currentArticleIndex === newsItems.length - 1}
+                disabled
+
+={currentArticleIndex === newsItems.length - 1}
                 variant="outline"
                 size="icon"
                 className="rounded-full"

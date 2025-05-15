@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {  BookmarkIcon, Share2Icon } from 'lucide-react';
+import { BookmarkIcon, Share2Icon } from 'lucide-react';
 import { useTextSize } from '@/context/TextSizeContext';
 import { useBookmarks } from '@/context/BookmarkContext';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-// Define News type (aligned with original schema and example)
+// Define News type (aligned with database schema)
 interface News {
   id: string;
   title: string;
@@ -18,8 +18,8 @@ interface News {
   category: string | null;
   created_at: string;
   published_at: string | null;
-  image?: string; // Added for image support
-  timeAgo?: string; // Added for formatted date
+  image_url: string | null; // Changed from `image` to `image_url` to match database
+  timeAgo?: string; // For formatted date
 }
 
 interface NewsCardProps {
@@ -67,8 +67,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
 
   const bookmarked = isBookmarked(article.id);
 
-  // Fallback image if none provided
-  const imageSrc = article.image || 'https://via.placeholder.com/400x300?text=News+Image';
+  // Use image_url with fallback
+  const imageSrc = article.image_url || 'https://via.placeholder.com/400x300?text=News+Image';
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">

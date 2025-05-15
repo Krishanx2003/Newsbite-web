@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       'pyktyyjoyfaprsvkuvzh.supabase.co',
       'lh3.googleusercontent.com',
       'via.placeholder.com',
+      'www.pexels.com'
      
     ],
   },
