@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import NewsCard from '@/components/NewsCard';
 import { BookmarkIcon, Share2Icon, ChevronLeftIcon } from 'lucide-react';
 import { createClient } from '@/lib/client';
 import sanitizeHtml from 'sanitize-html';
