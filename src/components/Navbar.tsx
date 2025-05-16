@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Menu, Moon, Sun, ChevronDown, Bell } from 'lucide-react';
+import { Search, Menu, Moon, Sun, ChevronDown, Bookmark } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
@@ -155,8 +155,11 @@ const Navbar: React.FC = () => {
               variant="ghost" 
               size="icon" 
               className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+              asChild
             >
-              <Bell className="h-5 w-5" />
+              <Link href="/bookmarks" aria-label="Bookmarks">
+                <Bookmark className="h-5 w-5" />
+              </Link>
             </Button>
             <div className="relative" ref={dropdownRef}>
               <Button 
@@ -247,8 +250,11 @@ const Navbar: React.FC = () => {
               variant="ghost" 
               size="icon"
               className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+              asChild
             >
-              <Bell className="h-5 w-5" />
+              <Link href="/bookmarks" aria-label="Bookmarks">
+                <Bookmark className="h-5 w-5" />
+              </Link>
             </Button>
             <div className="relative ml-auto" ref={dropdownRef}>
               <Button 
