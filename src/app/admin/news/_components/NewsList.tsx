@@ -9,6 +9,8 @@ interface News {
   category: string | null;
   is_published: boolean;
   published_at: string | null;
+  image_url: string | null; // Added for image URL
+  image_file?: File | null; // Added for image file (optional, not stored in DB)
 }
 
 interface Category {
@@ -26,6 +28,8 @@ export default function NewsList() {
   const [editCategory, setEditCategory] = useState('');
   const [editIsPublished, setEditIsPublished] = useState(false);
   const [editPublishedAt, setEditPublishedAt] = useState('');
+  const [editImageUrl, setEditImageUrl] = useState(''); // Added for image URL
+  const [editImageFile, setEditImageFile] = useState<File | null>(null); // Added for image file
 
   const fetchNews = async () => {
     setIsLoading(true);
@@ -70,6 +74,8 @@ export default function NewsList() {
     setEditCategory(item.category || '');
     setEditIsPublished(item.is_published);
     setEditPublishedAt(item.published_at || '');
+    setEditImageUrl(item.image_url || ''); // Set image URL
+    setEditImageFile(null); // Reset file input
   };
 
   const handleCancelEdit = () => {
@@ -79,6 +85,19 @@ export default function NewsList() {
     setEditCategory('');
     setEditIsPublished(false);
     setEditPublishedAt('');
+    setEditImageUrl('');
+    setEditImageFile(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setEditImageFile(file);
+    if (file) setEditImageUrl(''); // Clear URL input if a file is selected
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditImageUrl(e.target.value);
+    if (e.target.value) setEditImageFile(null); // Clear file input if a URL is provided
   };
 
   const handleEditSubmit = async (e: FormEvent, id: string) => {
@@ -86,19 +105,25 @@ export default function NewsList() {
     setError(null);
 
     try {
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('title', editTitle);
+      formData.append('content', editContent);
+      formData.append('category', editCategory || '');
+      formData.append('is_published', editIsPublished.toString());
+      if (editIsPublished && editPublishedAt) {
+        formData.append('published_at', editPublishedAt);
+      }
+      if (editImageUrl) {
+        formData.append('image_url', editImageUrl);
+      }
+      if (editImageFile) {
+        formData.append('image_file', editImageFile);
+      }
+
       const response = await fetch('/api/news', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id,
-          title: editTitle,
-          content: editContent,
-          category: editCategory || null,
-          is_published: editIsPublished,
-          published_at: editIsPublished && editPublishedAt ? editPublishedAt : null,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -114,6 +139,8 @@ export default function NewsList() {
       setEditCategory('');
       setEditIsPublished(false);
       setEditPublishedAt('');
+      setEditImageUrl('');
+      setEditImageFile(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -148,7 +175,7 @@ export default function NewsList() {
               className="p-4 bg-gray-50 rounded-md text-gray-700"
             >
               {editingNewsId === item.id ? (
-                <form onSubmit={(e) => handleEditSubmit(e, item.id)} className="space-y-4">
+                <form onSubmit={(e) => handleEditSubmit(e, item.id)} className="space-y-4" encType="multipart/form-data">
                   <div>
                     <label htmlFor="editTitle" className="block text-sm font-medium text-gray-700">
                       Title
@@ -196,6 +223,35 @@ export default function NewsList() {
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="editImageUrl" className="block text-sm font-medium text-gray-700">
+                      Image URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      id="editImageUrl"
+                      value={editImageUrl}
+                      onChange={handleUrlChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Enter image URL"
+                      disabled={!!editImageFile}
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="editImageFile" className="block text-sm font-medium text-gray-700">
+                      Upload Image (Optional)
+                    </label>
+                    <input
+                      type="file"
+                      id="editImageFile"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                      disabled={!!editImageUrl}
+                    />
                   </div>
 
                   <div>
@@ -252,6 +308,13 @@ export default function NewsList() {
                       Edit
                     </button>
                   </div>
+                  {item.image_url && (
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                  )}
                   <p className="text-sm text-gray-600">{item.content.substring(0, 100)}...</p>
                   <p className="text-sm text-gray-500">
                     Category: {item.category || 'None'} | Published: {item.is_published ? 'Yes' : 'No'}

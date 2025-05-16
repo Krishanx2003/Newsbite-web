@@ -67,8 +67,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
 
   const bookmarked = isBookmarked(article.id);
 
-  // Use image_url with fallback
-  const imageSrc = article.image_url || 'https://via.placeholder.com/400x300?text=News+Image';
+  // Use image_url with fallback and trim whitespace
+  const imageSrc = (article.image_url || 'https://via.placeholder.com/400x300?text=News+Image').trimStart();
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">
