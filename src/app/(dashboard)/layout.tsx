@@ -1,5 +1,6 @@
 import { Footer } from '@/components/Footer';
 import Navbar from '@/components/Navbar';
+import { BookmarkProvider } from '@/context/BookmarkContext';
 
 import type { Metadata } from 'next';
 
@@ -15,12 +16,13 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      
-      <main className="pt-16"> 
-        <Navbar />
-        {children}
-        <Footer />
-      </main>
+      <BookmarkProvider>
+        <main className="pt-16">
+          <Navbar />
+          {children}
+          <Footer />
+        </main>
+      </BookmarkProvider>
     </div>
   );
 }
