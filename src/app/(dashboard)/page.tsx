@@ -37,8 +37,14 @@ export default async function Home() {
       ? process.env.NEXT_PUBLIC_API_URL || "https://pop-roan.vercel.app"
       : "http://localhost:3000";
 
+  // Log the base URL for debugging
+  console.log('Base URL for fetching articles:', baseUrl);
+
   // Construct absolute URL for the API
   const apiUrl = `${baseUrl}/api/articles?status=publish`;
+
+  // Log the full API URL for debugging
+  console.log('Fetching articles from:', apiUrl);
 
   // Initialize articles as an empty array
   let articles: Article[] = [];
