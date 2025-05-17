@@ -157,7 +157,7 @@ const Navbar: React.FC = () => {
               className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
               asChild
             >
-              <Link href="/bookmarks" aria-label="Bookmarks">
+              <Link href="/bookmark" aria-label="Bookmarks">
                 <Bookmark className="h-5 w-5" />
               </Link>
             </Button>
@@ -252,7 +252,7 @@ const Navbar: React.FC = () => {
               className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
               asChild
             >
-              <Link href="/bookmarks" aria-label="Bookmarks">
+              <Link href="/bookmark" aria-label="Bookmarks">
                 <Bookmark className="h-5 w-5" />
               </Link>
             </Button>
