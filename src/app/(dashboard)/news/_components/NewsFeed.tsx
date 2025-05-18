@@ -5,6 +5,7 @@ import NewsCard from './NewsCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSearchParams } from 'next/navigation';
 
 // Mock CategoryTabs and PaginationDots (replace with actual implementations)
 const CategoryTabs: React.FC<{
@@ -16,7 +17,7 @@ const CategoryTabs: React.FC<{
     {categories.map((category) => (
       <Button
         key={category}
-        variant={activeCategory === category ? 'default' : 'default'}
+        variant={activeCategory === category ? 'default' : 'outline'}
         onClick={() => onSelectCategory(category)}
         className="whitespace-nowrap"
       >
@@ -56,7 +57,7 @@ interface News {
   published_at: string | null;
   is_published: boolean;
   author_id: string;
-  image_url: string | null; // Changed from `image` to `image_url`
+  image_url: string | null;
   timeAgo?: string;
 }
 
@@ -72,6 +73,7 @@ const NewsFeed: React.FC = () => {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const searchParams = useSearchParams();
 
   // Device detection without hooks
   const getDeviceType = (): 'mobile' | 'tablet' | 'desktop' => {
@@ -106,13 +108,17 @@ const NewsFeed: React.FC = () => {
             day: 'numeric',
             year: 'numeric',
           }),
-          image_url: item.image_url || null, // Use image_url directly
+          image_url: item.image_url || null,
         }));
 
         let filteredNews = formattedNews.filter((item) => item.is_published);
 
-        if (activeCategory !== 'top') {
-          filteredNews = filteredNews.filter((item) => item.category === activeCategory);
+        // Get category from URL query parameter
+        const urlCategory = searchParams.get('category')?.toLowerCase() || 'top';
+        setActiveCategory(urlCategory);
+
+        if (urlCategory !== 'top') {
+          filteredNews = filteredNews.filter((item) => item.category?.toLowerCase() === urlCategory);
         }
 
         setNewsItems(filteredNews);
@@ -130,7 +136,7 @@ const NewsFeed: React.FC = () => {
       }
     };
     fetchNews();
-  }, [activeCategory]);
+  }, [searchParams]);
 
   const goToPreviousArticle = () => {
     if (currentArticleIndex > 0) {
@@ -190,6 +196,9 @@ const NewsFeed: React.FC = () => {
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId);
     setCurrentArticleIndex(0);
+    // Update URL without reloading
+    const url = categoryId === 'top' ? '/news' : `/news?category=${categoryId.toLowerCase()}`;
+    window.history.pushState({}, '', url);
   };
 
   const handleDotClick = (index: number) => {
@@ -308,9 +317,7 @@ const NewsFeed: React.FC = () => {
               </Button>
               <Button
                 onClick={goToNextArticle}
-                disabled
-
-={currentArticleIndex === newsItems.length - 1}
+                disabled={currentArticleIndex === newsItems.length - 1}
                 variant="outline"
                 size="icon"
                 className="rounded-full"
