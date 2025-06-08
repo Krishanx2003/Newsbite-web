@@ -6,7 +6,7 @@ import { BookmarkProvider } from '@/context/BookmarkContext';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Brevvy',
+  title: 'NewsBite',
   description: 'News that matters. Insights that drive action.',
 };
 

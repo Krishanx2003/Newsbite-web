@@ -118,7 +118,7 @@ export const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t text-black  mt-12 pt-8 text-center ">
-          <p>© {new Date().getFullYear()} Vibe Check India. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} NewsBite. All rights reserved.</p>
         </div>
       </div> {/* Closing the container div */}
     </footer>

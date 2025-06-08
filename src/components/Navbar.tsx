@@ -1,36 +1,51 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Menu, ChevronDown, Bookmark } from 'lucide-react';
+import { Search, Menu, ChevronDown, Bookmark, User, LogOut, Settings, X, Sun, Moon } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from './ThemeToggle';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/client';
 import { useRouter } from 'next/navigation';
 import { Profile } from '@/types/profile';
+import { ThemeToggle } from './ThemeToggle';
 
 // Define Category type based on /api/categories
 interface Category {
   id: string;
   name: string;
+  slug: string;
 }
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]); // Dynamic categories
+  const [user, setUser] = useState<any>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
   const supabase = createClient();
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Default categories to use if fewer than 4 categories are available
-  const defaultCategories: string[] = ['Tech', 'Culture', 'Politics', 'Environment', 'Entertainment'];
+  const defaultCategories: Category[] = [
+    { id: '1', name: 'Tech', slug: 'tech' },
+    { id: '2', name: 'Culture', slug: 'culture' },
+    { id: '3', name: 'Politics', slug: 'politics' },
+    { id: '4', name: 'Entertainment', slug: 'entertainment' }
+  ];
 
-  // Fetch categories from /api/categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -40,39 +55,21 @@ const Navbar: React.FC = () => {
         }
         const data: Category[] = await response.json();
 
-        // Get first 4 categories (sorted by name from API)
-        const fetchedCategories = data.map((item) => item.name).slice(0, 4);
-
-        // Include 'top' and ensure exactly 5 categories
-        const uniqueCategories = ['top', ...new Set(fetchedCategories)];
-        const finalCategories: string[] = uniqueCategories.length >= 5
-          ? uniqueCategories.slice(0, 5) // Take first 5
-          : [...uniqueCategories, ...defaultCategories.filter(cat => !uniqueCategories.includes(cat)).slice(0, 5 - uniqueCategories.length)];
+        // Add 'top' category and ensure we have exactly 5 categories
+        const topCategory = { id: '0', name: 'Top', slug: 'top' };
+        const otherCategories = data.length >= 4 ? data.slice(0, 4) : defaultCategories.slice(0, 4);
+        const finalCategories = [topCategory, ...otherCategories];
 
         setCategories(finalCategories);
       } catch (err) {
         console.error('Failed to fetch categories:', err);
-        setCategories(['top', ...defaultCategories.slice(0, 4)]); // Fallback to 5 categories
+        // Fallback to default categories with 'top'
+        const topCategory = { id: '0', name: 'Top', slug: 'top' };
+        setCategories([topCategory, ...defaultCategories.slice(0, 4)]);
       }
     };
 
     fetchCategories();
-
-    // Real-time subscription for categories table changes
-    const channel = supabase
-      .channel('categories_changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // Listen for INSERT, UPDATE, DELETE
-          schema: 'public',
-          table: 'categories',
-        },
-        () => {
-          fetchCategories(); // Re-fetch categories on any change
-        }
-      )
-      .subscribe();
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -84,6 +81,7 @@ const Navbar: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
       if (session) {
+        setUser(session.user);
         try {
           const response = await fetch('/api/profile');
           if (response.ok) {
@@ -102,253 +100,284 @@ const Navbar: React.FC = () => {
       setIsAuthenticated(!!session);
       if (event === 'SIGNED_OUT') {
         setProfile(null);
-        setIsDropdownOpen(false);
       } else if (event === 'SIGNED_IN') {
         checkAuthAndProfile();
       }
     });
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
       subscription.unsubscribe();
-      supabase.removeChannel(channel);
-      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [supabase]);
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-    setIsDropdownOpen(false);
-  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push('/login');
-    setIsMobileMenuOpen(false);
-    setIsDropdownOpen(false);
+    setIsMenuOpen(false);
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const handleCategoryClick = (slug: string) => {
+    router.push(slug === 'top' ? '/news' : `/news?category=${slug}`);
+    setIsMenuOpen(false);
   };
 
-  const handleLinkClick = (href: string) => {
-    router.push(href);
-    setIsDropdownOpen(false);
-    setIsMobileMenuOpen(false);
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    // Implement your theme toggle logic here
   };
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 
-      ${isScrolled ? 'bg-off-white/90 dark:bg-near-black/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
+        isScrolled
+          ? 'bg-background/80 backdrop-blur-md border-b border-border/50 shadow-lg shadow-black/5'
+          : 'bg-transparent'
+      }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-montserrat font-bold text-blue-600">
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center space-x-2 group transition-transform duration-200 hover:scale-105">
               <Image 
-                src='/brevvy.png'
-                alt="Brevvy Logo"
+                src='/newsbitelogo.svg'
+                alt="NewsBite Logo"
+                width={40}
+                height={40}
+                className="h-10 w-auto"
+              />
+              <Image 
+                src='/newsbitetext.svg'
+                alt="NewsBite"
                 width={120}
-                height={220}
-                className="h-20 w-auto mr-2"
+                height={40}
+                className="h-8 w-auto"
               />
             </Link>
           </div>
-          
+
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-10">
+          <div className="hidden lg:flex items-center space-x-1">
             {categories.map((category) => (
-              <Link 
-                key={category}
-                href={category === 'top' ? '/news' : `/news?category=${category.toLowerCase()}`}
-                className="text-gray-800 dark:text-gray-200 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-inter font-medium transition-colors"
+              <button
+                key={category.id}
+                onClick={() => handleCategoryClick(category.slug)}
+                className="px-4 py-2 rounded-xl font-inter font-medium text-sm transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                aria-label={`Navigate to ${category.name}`}
               >
-                {category}
-              </Link>
+                {category.name}
+              </button>
             ))}
-          </nav>
-          
-          {/* Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex items-center space-x-2">
+            {/* Search */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-xl hover:scale-105 transition-all duration-200"
+              onClick={() => console.log('Open search')}
+              aria-label="Search"
             >
               <Search className="h-5 w-5" />
             </Button>
+
+            {/* Bookmarks */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-xl hover:scale-105 transition-all duration-200"
+              asChild
+            >
+              <Link href="/bookmark" aria-label="Bookmarks">
+                <Bookmark className="h-5 w-5" />
+              </Link>
+            </Button>
+
+            {/* Theme Toggle */}
             <ThemeToggle />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
-              asChild
-            >
-              <Link href="/bookmark" aria-label="Bookmarks">
-                <Bookmark className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="relative" ref={dropdownRef}>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleDropdown}
-                className="flex items-center border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
+
+            {/* Profile Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="rounded-xl px-3 py-2 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  aria-label="User menu"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || 'User'} />
+                      <AvatarFallback className="bg-primary text-primary-foreground font-inter font-medium">
+                        {profile?.display_name ? profile.display_name.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <ChevronDown className="h-4 w-4 opacity-70" />
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
+                className="w-56 rounded-xl border border-border/50 bg-popover/95 backdrop-blur-md shadow-xl animate-slide-down"
               >
-                {isAuthenticated && profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt="Profile"
-                    className="h-6 w-6 rounded-full object-cover mr-2"
-                  />
-                ) : (
-                  <span className="h-6 w-6 rounded-full bg-gray-200 mr-2" />
-                )}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md py-1 z-50">
-                  {isAuthenticated ? (
-                    <>
-                      <button
-                        onClick={() => handleLinkClick('/profile')}
-                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
-                      >
-                        Profile
-                      </button>
-                      <button
-                        onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => handleLinkClick('/login')}
-                      className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
+                {isAuthenticated ? (
+                  <>
+                    <DropdownMenuLabel className="font-inter">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{profile?.display_name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => router.push('/profile')}
+                      className="rounded-lg cursor-pointer hover:bg-accent transition-colors duration-150"
                     >
-                      Sign In
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
+                      <User className="mr-2 h-4 w-4" />
+                      <span className="font-inter">Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => router.push('/settings')}
+                      className="rounded-lg cursor-pointer hover:bg-accent transition-colors duration-150"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span className="font-inter">Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={handleSignOut}
+                      className="rounded-lg cursor-pointer hover:bg-destructive hover:text-destructive-foreground transition-colors duration-150"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span className="font-inter">Sign out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem 
+                    onClick={() => router.push('/login')}
+                    className="rounded-lg cursor-pointer hover:bg-accent transition-colors duration-150"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span className="font-inter">Sign in</span>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          
-          {/* Mobile menu button */}
-          <div className="flex md:hidden">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleMobileMenu}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
+
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center space-x-2">
+            <ThemeToggle />
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="rounded-xl hover:scale-105 transition-all duration-200"
+              aria-label="Toggle menu"
             >
-              <Menu className="h-6 w-6" />
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
         </div>
-      </div>
-      
-      {/* Mobile menu */}
-      <div 
-        className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-          isMobileMenuOpen ? 'max-h-[500px] py-4' : 'max-h-0'
-        } bg-off-white/95 dark:bg-near-black/95 backdrop-blur-md`}
-      >
-        <div className="container mx-auto px-4 space-y-2">
-          <div className="flex items-center space-x-4 mb-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
-              asChild
-            >
-              <Link href="/bookmark" aria-label="Bookmarks">
-                <Bookmark className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="relative ml-auto" ref={dropdownRef}>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleDropdown}
-                className="flex items-center border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
-              >
-                {isAuthenticated && profile?.avatar_url ? (
-                  <img
-                    src={profile.avatar_url}
-                    alt="Profile"
-                    className="h-6 w-6 rounded-full object-cover mr-2"
-                  />
-                ) : (
-                  <span className="h-6 w-6 rounded-full bg-gray-200 mr-2" />
-                )}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-md py-1 z-50">
-                  {isAuthenticated ? (
-                    <>
-                      <button
-                        onClick={() => handleLinkClick('/profile')}
-                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
-                      >
-                        Profile
-                      </button>
-                      <button
-                        onClick={handleSignOut}
-                        className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => handleLinkClick('/login')}
-                      className="block w-full text-left px-4 py-2 text-sm font-inter text-gray-700 dark:text-gray-200 hover:bg-blue-600/10"
-                    >
-                      Sign In
-                    </button>
-                  )}
-                </div>
-              )}
+
+        {/* Mobile Menu */}
+        <div
+          className={`lg:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+            isMenuOpen 
+              ? 'max-h-96 opacity-100 pb-6' 
+              : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="pt-4 pb-2 space-y-2 bg-background/95 backdrop-blur-md rounded-xl border border-border/50 shadow-lg mt-2">
+            {/* Mobile Categories */}
+            <div className="px-4 pb-2">
+              <h3 className="font-montserrat font-semibold text-sm text-muted-foreground mb-3">Categories</h3>
+              <div className="space-y-1">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.slug)}
+                    className="block w-full text-left px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:translate-x-1"
+                    aria-label={`Navigate to ${category.name}`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2">
-            {categories.map((category) => (
-              <Link 
-                key={category}
-                href={category === 'top' ? '/news' : `/news?category=${category.toLowerCase()}`}
-                className="px-3 py-2 rounded-md text-sm font-inter font-medium bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white text-center transition-transform duration-200 hover:scale-105"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {category}
-              </Link>
-            ))}
+
+            {/* Mobile Actions */}
+            <div className="px-4 pt-2 border-t border-border/50">
+              <h3 className="font-montserrat font-semibold text-sm text-muted-foreground mb-3">Actions</h3>
+              <div className="space-y-1">
+                <button
+                  onClick={() => {
+                    console.log('Open search');
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:translate-x-1"
+                  aria-label="Search"
+                >
+                  <Search className="mr-3 h-5 w-5" />
+                  Search
+                </button>
+                <Link
+                  href="/bookmark"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center w-full px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:translate-x-1"
+                  aria-label="Bookmarks"
+                >
+                  <Bookmark className="mr-3 h-5 w-5" />
+                  Bookmarks
+                </Link>
+                
+                {isAuthenticated ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        router.push('/profile');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:translate-x-1"
+                      aria-label="Profile"
+                    >
+                      <User className="mr-3 h-5 w-5" />
+                      Profile
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center w-full px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground hover:translate-x-1"
+                      aria-label="Sign out"
+                    >
+                      <LogOut className="mr-3 h-5 w-5" />
+                      Sign out
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      router.push('/login');
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center w-full px-3 py-2 rounded-lg font-inter font-medium transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:translate-x-1"
+                    aria-label="Sign in"
+                  >
+                    <User className="mr-3 h-5 w-5" />
+                    Sign in
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </header>
+    </nav>
   );
 };
 

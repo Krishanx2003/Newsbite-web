@@ -24,25 +24,27 @@ const fredokaOne = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: 'Brevvy',
-  keywords: 'news, articles, insights, brevvy',
+  title: 'NewsBite',
+  keywords: 'news, articles, insights, newsbite',
   description: 'News that matters. Insights that drive action.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
-      suppressHydrationWarning
-    >
-    <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-        {children}
-      </ThemeProvider>
-    </div>
+    <html lang="en">
+      <body
+        className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
+        suppressHydrationWarning
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }
