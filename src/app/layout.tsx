@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
-import './globals.css';
+// src\app\layout.tsx
 
-// Load Google Fonts
+import './globals.css';
 import { Montserrat, Inter, Fredoka } from 'next/font/google';
+import type { Metadata } from 'next';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const montserrat = Montserrat({
   weight: '700',
@@ -22,32 +23,26 @@ const fredokaOne = Fredoka({
   subsets: ['latin'],
 });
 
-// Default metadata (can be overridden by nested layouts)
 export const metadata: Metadata = {
   title: 'Brevvy',
   keywords: 'news, articles, insights, brevvy',
   description: 'News that matters. Insights that drive action.',
-  
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Inter:wght@400;500&family=Fredoka+One&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body
-        className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
-      >
+    <div
+      className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
+      suppressHydrationWarning
+    >
+    <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         {children}
-      </body>
-    </html>
+      </ThemeProvider>
+    </div>
   );
 }

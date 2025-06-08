@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Menu, Moon, Sun, ChevronDown, Bookmark } from 'lucide-react';
+import { Search, Menu, ChevronDown, Bookmark } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { useTheme } from 'next-themes';
+import { ThemeToggle } from './ThemeToggle';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/lib/client';
@@ -23,7 +23,6 @@ const Navbar: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [categories, setCategories] = useState<string[]>([]); // Dynamic categories
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const supabase = createClient();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -130,10 +129,6 @@ const Navbar: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push('/login');
@@ -193,14 +188,7 @@ const Navbar: React.FC = () => {
             >
               <Search className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleTheme}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 transition-transform duration-200 hover:scale-105"
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            <ThemeToggle />
             <Button 
               variant="ghost" 
               size="icon" 
@@ -261,14 +249,6 @@ const Navbar: React.FC = () => {
           
           {/* Mobile menu button */}
           <div className="flex md:hidden">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleTheme}
-              className="text-gray-800 dark:text-gray-200 hover:text-blue-600 mr-2 transition-transform duration-200 hover:scale-105"
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
             <Button 
               variant="ghost" 
               size="icon" 
