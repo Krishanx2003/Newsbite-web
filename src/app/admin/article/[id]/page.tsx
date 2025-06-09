@@ -2,14 +2,13 @@ import { Metadata } from 'next';
 import { getSEOMetadataByPath } from '@/lib/supabase/seo';
 import SEO from '@/components/SEO';
 
-interface ArticlePageProps {
-  params: {
-    slug: string;
-  };
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const path = `/admin/article/${params.slug}`;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const path = `/admin/article/${params.id}`;
   const seoData = await getSEOMetadataByPath(path);
 
   return {
@@ -35,8 +34,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   };
 }
 
-export default async function ArticlePage({ params }: ArticlePageProps) {
-  const path = `/admin/article/${params.slug}`;
+export default async function ArticlePage({ params }: Props) {
+  const path = `/admin/article/${params.id}`;
   const seoData = await getSEOMetadataByPath(path);
 
   return (
