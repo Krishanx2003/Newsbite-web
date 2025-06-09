@@ -151,7 +151,7 @@ const Navbar: React.FC = () => {
                 src='/newsbitetext.svg'
                 alt="NewsBite"
                 width={120}
-                height={40}
+                height={80}
                 className="h-8 w-auto"
               />
             </Link>
