@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent, useRef } from 'react';
 import { createClient } from '@/lib/client';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { slugify } from '@/lib/utils';
+import RichTextEditor from './RichTextEditor';
 
 interface FormData {
   title: string;
@@ -55,6 +56,9 @@ const ArticleForm: React.FC = () => {
   const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const autoSaveInterval = useRef<NodeJS.Timeout | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -137,6 +141,93 @@ const ArticleForm: React.FC = () => {
     const minutes = Math.ceil(words / 200) || 1;
     setFormData((prev) => ({ ...prev, read_time: `${minutes} min read` }));
   }, [formData.content]);
+
+  // Add auto-save functionality
+  useEffect(() => {
+    if (articleId) {
+      autoSaveInterval.current = setInterval(async () => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+          // Validate required fields
+          if (!formData.title) throw new Error('Title is required');
+          if (!formData.subtitle) throw new Error('Subtitle is required');
+          if (!formData.slug) throw new Error('Slug is required');
+          if (!formData.author_name) throw new Error('Author name is required');
+          if (!formData.author_avatar) throw new Error('Author avatar is required');
+          if (!formData.date) throw new Error('Date is required');
+          if (!formData.read_time) throw new Error('Read time is required');
+          if (!formData.category) throw new Error('Category is required');
+          if (!formData.content) throw new Error('Content is required');
+          if (!formData.tags.length) throw new Error('At least one tag is required');
+
+          let image_url = formData.image_url;
+          if (imageFile) {
+            const fileName = `article-images/${Date.now()}-${imageFile.name}`;
+            const { error: uploadError } = await supabase.storage
+              .from('article-images')
+              .upload(fileName, imageFile, { upsert: true });
+
+            if (uploadError) {
+              throw new Error(`Image upload failed: ${uploadError.message}`);
+            }
+
+            const { data } = supabase.storage.from('article-images').getPublicUrl(fileName);
+            image_url = data.publicUrl;
+          }
+          if (!image_url) {
+            throw new Error('Please provide an article image');
+          }
+
+          if (formData.status === 'scheduled' && !formData.scheduled_date) {
+            throw new Error('Scheduled date is required for scheduled articles');
+          }
+
+          const submissionData = {
+            title: formData.title,
+            subtitle: formData.subtitle,
+            slug: formData.slug,
+            meta_description: formData.meta_description || undefined,
+            keywords: formData.keywords || undefined,
+            author: { name: formData.author_name, avatar: formData.author_avatar },
+            date: formData.date,
+            read_time: formData.read_time,
+            category: formData.category,
+            content: formData.content,
+            tags: formData.tags,
+            image_url,
+            image_alt_text: formData.image_alt_text || undefined,
+            status: formData.status,
+            scheduled_date: formData.status === 'scheduled' ? formData.scheduled_date : undefined,
+          };
+
+          const response = await fetch(`/api/articles?id=${articleId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submissionData),
+          });
+
+          if (!response.ok) {
+            const { error, details } = await response.json();
+            throw new Error(details ? `${error}: ${details.map((d: any) => d.message).join(', ')}` : error);
+          }
+
+          setLastSaved(new Date());
+        } catch (err) {
+          console.error('Auto-save failed:', err);
+        } finally {
+          setIsLoading(false);
+        }
+      }, 30000); // Auto-save every 30 seconds
+    }
+
+    return () => {
+      if (autoSaveInterval.current) {
+        clearInterval(autoSaveInterval.current);
+      }
+    };
+  }, [articleId, formData, imageFile, supabase.storage]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -296,14 +387,34 @@ const ArticleForm: React.FC = () => {
         throw new Error(details ? `${error}: ${details.map((d: any) => d.message).join(', ')}` : error);
       }
 
-      toast.success(`Article ${formData.status === 'publish' ? 'published' : formData.status === 'scheduled' ? 'scheduled' : 'saved as draft'} successfully!`);
-      setTimeout(() => router.push('/admin/articles'), 2000);
+      setLastSaved(new Date());
+      if (!e.defaultPrevented) {
+        toast.success(`Article ${formData.status === 'publish' ? 'published' : formData.status === 'scheduled' ? 'scheduled' : 'saved as draft'} successfully!`);
+        setTimeout(() => router.push('/admin/articles'), 2000);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit article');
-      toast.error(err instanceof Error ? err.message : 'Failed to submit article');
+      if (!e.defaultPrevented) {
+        toast.error(err instanceof Error ? err.message : 'Failed to submit article');
+      }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Replace the content textarea with RichTextEditor
+  const handleImageUpload = async (file: File): Promise<string> => {
+    const fileName = `article-images/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from('article-images')
+      .upload(fileName, file, { upsert: true });
+
+    if (uploadError) {
+      throw new Error(`Image upload failed: ${uploadError.message}`);
+    }
+
+    const { data } = supabase.storage.from('article-images').getPublicUrl(fileName);
+    return data.publicUrl;
   };
 
   if (error && !isAdmin) {
@@ -435,15 +546,35 @@ const ArticleForm: React.FC = () => {
         )}
 
         <div className="mb-4">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Content</label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            rows={6}
-          />
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-gray-700 dark:text-gray-300">Content</label>
+            <div className="flex items-center gap-4">
+              {lastSaved && (
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Last saved: {lastSaved.toLocaleTimeString()}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsPreviewMode(!isPreviewMode)}
+                className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                {isPreviewMode ? 'Edit' : 'Preview'}
+              </button>
+            </div>
+          </div>
+          {isPreviewMode ? (
+            <div
+              className="prose dark:prose-invert max-w-none p-4 border border-gray-200 dark:border-gray-700 rounded-lg min-h-[300px]"
+              dangerouslySetInnerHTML={{ __html: formData.content }}
+            />
+          ) : (
+            <RichTextEditor
+              content={formData.content}
+              onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
+              onImageUpload={handleImageUpload}
+            />
+          )}
         </div>
 
         <div className="mb-4">
