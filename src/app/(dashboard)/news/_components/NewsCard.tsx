@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { BookmarkIcon, Share2Icon } from 'lucide-react';
+import { BookmarkIcon, Share2Icon, Clock, User, Hash } from 'lucide-react';
 import { useTextSize } from '@/context/TextSizeContext';
 import { useBookmarks } from '@/context/BookmarkContext';
 import Image from 'next/image';
@@ -18,13 +18,24 @@ interface News {
   category: string | null;
   created_at: string;
   published_at: string | null;
-  image_url: string | null; // Changed from `image` to `image_url` to match database
-  timeAgo?: string; // For formatted date
+  image_url: string | null;
+  timeAgo?: string;
+  author?: string;
+  wordCount?: number;
 }
 
 interface NewsCardProps {
   article: News;
 }
+
+const categoryColors = {
+  world: 'bg-green-100 text-green-800 border-green-200',
+  tech: 'bg-purple-100 text-purple-800 border-purple-200',
+  business: 'bg-orange-100 text-orange-800 border-orange-200',
+  entertainment: 'bg-pink-100 text-pink-800 border-pink-200',
+  health: 'bg-red-100 text-red-800 border-red-200',
+  general: 'bg-blue-100 text-blue-800 border-blue-200'
+};
 
 const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
   const { textSize } = useTextSize() as { textSize: keyof typeof textSizeClasses };
@@ -66,25 +77,20 @@ const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
   };
 
   const bookmarked = isBookmarked(article.id);
-
-  // Use image_url with fallback and trim whitespace
   const imageSrc = (article.image_url || 'https://via.placeholder.com/400x300?text=News+Image').trimStart();
+  const categoryColorClass = categoryColors[article.category?.toLowerCase() as keyof typeof categoryColors] || categoryColors.general;
 
   return (
-    <Card className="h-full overflow-hidden flex flex-col">
-      <div className="relative h-48 sm:h-64 overflow-hidden">
+    <article className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
+      {/* Image */}
+      <div className="aspect-video relative overflow-hidden">
         <Image
           src={imageSrc}
           alt={article.title}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           width={400}
           height={300}
         />
-        <div className="absolute top-2 left-2">
-          <Badge variant="secondary" className="bg-primary/90 text-white">
-            {article.category || 'General'}
-          </Badge>
-        </div>
         <div className="absolute top-2 right-2 flex space-x-2">
           <button
             onClick={handleBookmarkClick}
@@ -105,20 +111,49 @@ const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
           </button>
         </div>
       </div>
-      <CardContent className="flex-grow flex flex-col p-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-muted-foreground">{article.timeAgo}</span>
+
+      {/* Content */}
+      <div className="p-6">
+        {/* Category Badge */}
+        <div className="flex items-center mb-3">
+          <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${categoryColorClass}`}>
+            <span className="capitalize">{article.category || 'General'}</span>
+          </span>
         </div>
+
+        {/* Title */}
         <Link href={`/news/${article.id}`}>
-          <h3 className={cn('font-semibold mb-2 line-clamp-2', textSizeClasses[textSize])}>
+          <h3 className={cn('font-bold text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-blue-600 transition-colors duration-200', textSizeClasses[textSize])}>
             {article.title}
           </h3>
-          <p className={cn('text-muted-foreground line-clamp-3 flex-grow', textSizeClasses[textSize])}>
+          <p className={cn('text-gray-600 leading-relaxed mb-4 line-clamp-3', textSizeClasses[textSize])}>
             {article.content}
           </p>
         </Link>
-      </CardContent>
-    </Card>
+
+        {/* Metadata */}
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center space-x-4">
+            {article.author && (
+              <div className="flex items-center space-x-1">
+                <User className="h-3 w-3" />
+                <span>{article.author}</span>
+              </div>
+            )}
+            <div className="flex items-center space-x-1">
+              <Clock className="h-3 w-3" />
+              <span>{article.timeAgo}</span>
+            </div>
+          </div>
+          {article.wordCount && (
+            <div className="flex items-center space-x-1">
+              <Hash className="h-3 w-3" />
+              <span>{article.wordCount} words</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
   );
 };
 

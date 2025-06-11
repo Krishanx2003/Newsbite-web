@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       'via.placeholder.com',
       'www.pexels.com',
       'i.pinimg.com',
+      'cdn.codeflare.in'
      
     ],
   },
