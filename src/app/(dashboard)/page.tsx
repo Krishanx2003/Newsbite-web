@@ -5,6 +5,7 @@ import { PersonalizationCard } from "./articles/_components/PersonalizationCard"
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { createClient } from '@/lib/server';
+import AdContainer from '@/components/AdContainer';
 
 // Article type matching API schema
 type Article = {
@@ -97,6 +98,9 @@ export default async function Home() {
         />
       </section>
 
+      {/* Top Ad */}
+      <AdContainer position="top" className="mb-8" />
+
       {/* Personalization Card */}
       <PersonalizationCard user={user} />
 
@@ -115,9 +119,18 @@ export default async function Home() {
         </div>
 
         {articles.length > 0 ? (
-          <ArticleGrid
-            articles={articles.slice(0, 6)}
-          />
+          <>
+            <ArticleGrid
+              articles={articles.slice(0, 3)}
+            />
+            
+            {/* Middle Ad */}
+            <AdContainer position="middle" className="my-8" />
+            
+            <ArticleGrid
+              articles={articles.slice(3, 6)}
+            />
+          </>
         ) : (
           <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-inter">
             <p>No articles found</p>
@@ -135,6 +148,9 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      {/* Bottom Ad */}
+      <AdContainer position="bottom" className="mb-20" />
 
       {/* Articles by Category Sections */}
       {categories.length > 0 && (

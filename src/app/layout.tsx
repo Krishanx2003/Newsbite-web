@@ -5,6 +5,7 @@ import { Montserrat, Inter, Fredoka } from 'next/font/google';
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/theme-provider';
 import SEO from '@/components/SEO';
+import Script from 'next/script';
 
 const montserrat = Montserrat({
   weight: '700',
@@ -63,14 +64,25 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-site-verification',
+    google: 'ca-pub-3778747736249937',
     yandex: 'your-yandex-verification',
+  },
+  other: {
+    'google-adsense-account': 'ca-pub-3778747736249937',
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
         suppressHydrationWarning
