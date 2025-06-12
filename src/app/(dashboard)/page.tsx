@@ -1,6 +1,7 @@
 import ArticleGrid from "./articles/_components/ArticleGrid";
 import { ArticlesByCategory } from "./articles/_components/ArticlesByCategory";
 import { HeroCarousel } from "./articles/_components/HeroCarousel";
+import { PersonalizationCard } from "./articles/_components/PersonalizationCard";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { createClient } from '@/lib/server';
@@ -34,7 +35,8 @@ export default async function Home() {
   // Determine base URL based on environment
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL || "https://www.newsbite.in/"
+      ? process.env.NEXT_PUBLIC_API_URL || 
+      "https://www.newsbite.in/"
       : "http://localhost:3000";
 
   // Log the base URL for debugging
@@ -96,34 +98,7 @@ export default async function Home() {
       </section>
 
       {/* Personalization Card */}
-      <section className="mb-16">
-        <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-blue-600/20 max-w-md mx-auto transition-opacity duration-300">
-          <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center mb-4">
-            <User className="h-8 w-8 text-blue-600" />
-          </div>
-          <h3 className="text-lg font-montserrat font-bold text-gray-800 dark:text-gray-200 mb-2">
-            {user ? "Personalize your feed" : "Sign in to personalize your feed"}
-          </h3>
-          <p className="text-base font-inter text-gray-700 dark:text-gray-300 text-center mb-6">
-            Get news tailored to your interests and never miss the stories that matter to you.
-          </p>
-          {user ? (
-            <Button
-              variant="outline"
-              className="w-full border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md px-4 py-2 transition-transform duration-200 hover:scale-105"
-            >
-              Pick Your Vibes
-            </Button>
-          ) : (
-            <Button
-              asChild
-              className="w-full bg-blue-600 hover:bg-blue-600/80 text-white font-fredoka rounded-md px-4 py-2 mb-2 transition-transform duration-200 hover:scale-105"
-            >
-              <a href="/login">Sign In</a>
-            </Button>
-          )}
-        </div>
-      </section>
+      <PersonalizationCard user={user} />
 
       {/* Recent Articles Section */}
       <section className="mb-20">
