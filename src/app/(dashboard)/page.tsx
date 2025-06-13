@@ -5,7 +5,6 @@ import { PersonalizationCard } from "./articles/_components/PersonalizationCard"
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { createClient } from '@/lib/server';
-import AdContainer from '@/components/AdContainer';
 
 // Article type matching API schema
 type Article = {
@@ -98,11 +97,8 @@ export default async function Home() {
         />
       </section>
 
-      {/* Top Ad */}
-      <AdContainer position="top" className="mb-8" />
-
       {/* Personalization Card */}
-      <PersonalizationCard user={user} />
+      {/* <PersonalizationCard user={user} /> */}
 
       {/* Recent Articles Section */}
       <section className="mb-20">
@@ -125,7 +121,7 @@ export default async function Home() {
             />
             
             {/* Middle Ad */}
-            <AdContainer position="middle" className="my-8" />
+            {/* <AdContainer position="middle" className="my-8" /> */}
             
             <ArticleGrid
               articles={articles.slice(3, 6)}
@@ -148,9 +144,6 @@ export default async function Home() {
           </div>
         )}
       </section>
-
-      {/* Bottom Ad */}
-      <AdContainer position="bottom" className="mb-20" />
 
       {/* Articles by Category Sections */}
       {categories.length > 0 && (

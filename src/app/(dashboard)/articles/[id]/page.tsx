@@ -37,9 +37,32 @@ interface RelatedArticle {
   tags: string[];
 }
 
+interface LatestArticle {
+  id: string;
+  title: string;
+  slug: string;
+  image_url: string;
+  category: string;
+  date: string;
+  read_time: string;
+}
+
+interface News {
+  id: string;
+  title: string;
+  content: string;
+  category: string | null;
+  created_at: string;
+  published_at: string | null;
+  image_url: string | null;
+  is_published: boolean;
+}
+
 export default function ArticleDetailPage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<RelatedArticle[]>([]);
+  const [latestArticles, setLatestArticles] = useState<LatestArticle[]>([]);
+  const [latestNews, setLatestNews] = useState<News[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -76,12 +99,30 @@ export default function ArticleDetailPage() {
           throw new Error(`Failed to fetch article: ${response.status}`);
         }
         const data = await response.json();
+        console.log('API Response:', data);
         if (!data.article) {
           throw new Error('Article not found');
         }
         setArticle(data.article);
         setRelatedArticles(data.relatedArticles || []);
+
+        // Fetch latest news
+        const newsResponse = await fetch('/api/news');
+        if (!newsResponse.ok) {
+          throw new Error(`Failed to fetch news: ${newsResponse.status}`);
+        }
+        const newsData = await newsResponse.json();
+        // Filter only published news and take the latest 2
+        const publishedNews = newsData
+          .filter((news: News) => news.is_published)
+          .sort((a: News, b: News) => 
+            new Date(b.published_at || b.created_at).getTime() - 
+            new Date(a.published_at || a.created_at).getTime()
+          )
+          .slice(0, 2);
+        setLatestNews(publishedNews);
       } catch (err) {
+        console.error('Error fetching article:', err);
         setError(err instanceof Error ? err.message : 'Failed to load article');
       } finally {
         setIsLoading(false);
@@ -360,71 +401,133 @@ export default function ArticleDetailPage() {
                 <h2 className="text-2xl font-semibold mb-6 font-serif">Related Articles</h2>
                 <div className="space-y-6">
                   {relatedArticles.map((related) => (
-                    <Card key={related.id} className="group hover:shadow-xl transition-all duration-300 cursor-pointer">
-                      <CardContent className="p-0">
-                        <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
-                          <Image
-                            src={related.image_url}
-                            alt={related.title}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <Badge variant="secondary" className="mb-3">
-                            {related.category}
-                          </Badge>
-                          <h3 className="font-semibold text-md mb-3 group-hover:text-primary transition-colors line-clamp-2 font-sans">
-                            {related.title}
-                          </h3>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {related.tags.slice(0, 2).map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
+                    <Link href={`/articles/${related.id}`} key={related.id}>
+                      <Card className="group hover:shadow-xl transition-all duration-300 cursor-pointer">
+                        <CardContent className="p-0">
+                          <div className="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                            <Image
+                              src={related.image_url}
+                              alt={related.title}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                          <div className="p-4">
+                            <Badge variant="secondary" className="mb-3">
+                              {related.category}
+                            </Badge>
+                            <h3 className="font-semibold text-md mb-3 group-hover:text-primary transition-colors line-clamp-2 font-sans">
+                              {related.title}
+                            </h3>
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {related.tags.slice(0, 2).map((tag) => (
+                                <Badge key={tag} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   ))}
                 </div>
                 <div className="text-center mt-8">
-                  <Button variant="outline" size="lg" className="px-8 hover:bg-primary hover:text-primary-foreground transition-colors">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="px-8 hover:bg-primary hover:text-primary-foreground transition-colors"
+                    onClick={() => router.push('/articles')}
+                  >
                     View All Articles
                   </Button>
                 </div>
               </div>
             )}
 
-            {/* Placeholder for News */}
+            {/* Latest News */}
             <div className="mt-12">
               <h2 className="text-2xl font-semibold mb-6 font-serif">Latest News</h2>
               <div className="space-y-4">
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">News Headline 1</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the news article goes here...</p>
-                </Card>
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">News Headline 2</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the news article goes here...</p>
-                </Card>
+                {latestNews.map((news) => (
+                  <Card key={news.id} className="p-4 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                    <div className="flex gap-4">
+                      {news.image_url && (
+                        <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={news.image_url}
+                            alt={news.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <Badge variant="secondary" className="mb-2">
+                          {news.category || 'Uncategorized'}
+                        </Badge>
+                        <h3 className="font-semibold text-md mb-2 line-clamp-2">{news.title}</h3>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{formatDate(news.published_at || news.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
               </div>
             </div>
 
-            {/* Placeholder for Additional Articles */}
+            {/* Latest Articles */}
             <div className="mt-12">
-              <h2 className="text-2xl font-semibold mb-6 font-serif">More Articles</h2>
-              <div className="space-y-4">
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">Article Title 1</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
-                </Card>
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">Article Title 2</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
-                </Card>
-              </div>
+              <h2 className="text-2xl font-semibold mb-6 font-serif">Latest Articles</h2>
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[1, 2].map((i) => (
+                    <Card key={i} className="p-4 animate-pulse">
+                      <div className="flex gap-4">
+                        <div className="w-20 h-20 bg-muted rounded-lg"></div>
+                        <div className="flex-1">
+                          <div className="h-4 w-20 bg-muted rounded mb-2"></div>
+                          <div className="h-5 w-3/4 bg-muted rounded mb-2"></div>
+                          <div className="h-4 w-1/2 bg-muted rounded"></div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : latestArticles.length > 0 ? (
+                <div className="space-y-4">
+                  {latestArticles.map((article) => (
+                    <Card key={article.id} className="p-4 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                      <div className="flex gap-4">
+                        <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={article.image_url}
+                            alt={article.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <Badge variant="secondary" className="mb-2">
+                            {article.category}
+                          </Badge>
+                          <h3 className="font-semibold text-md mb-2 line-clamp-2">{article.title}</h3>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{formatDate(article.date)}</span>
+                            <span>•</span>
+                            <span>{article.read_time}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No latest articles available
+                </div>
+              )}
             </div>
           </aside>
         </div>
