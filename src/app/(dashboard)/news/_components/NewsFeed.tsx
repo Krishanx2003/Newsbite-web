@@ -65,23 +65,9 @@ const NewsFeed: React.FC = () => {
   const [newsItems, setNewsItems] = useState<News[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('top');
-  const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
-  const [animationDirection, setAnimationDirection] = useState<'left' | 'right' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSwiping, setIsSwiping] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const searchParams = useSearchParams();
-
-  // Device detection without hooks
-  const getDeviceType = (): 'mobile' | 'tablet' | 'desktop' => {
-    const width = window.innerWidth;
-    if (width < 640) return 'mobile';
-    if (width < 1024) return 'tablet';
-    return 'desktop';
-  };
 
   // Fetch news and format timeAgo
   useEffect(() => {
@@ -122,7 +108,6 @@ const NewsFeed: React.FC = () => {
         }
 
         setNewsItems(filteredNews);
-        setCurrentArticleIndex(0);
 
         const uniqueCategories = [
           'top',
@@ -138,92 +123,16 @@ const NewsFeed: React.FC = () => {
     fetchNews();
   }, [searchParams]);
 
-  const goToPreviousArticle = () => {
-    if (currentArticleIndex > 0) {
-      setAnimationDirection('right');
-      setCurrentArticleIndex(currentArticleIndex - 1);
-    }
-  };
-
-  const goToNextArticle = () => {
-    if (currentArticleIndex < newsItems.length - 1) {
-      setAnimationDirection('left');
-      setCurrentArticleIndex(currentArticleIndex + 1);
-    }
-  };
-
-  // Swipe handling
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-    setIsSwiping(true);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    const currentX = e.targetTouches[0].clientX;
-    setTouchEnd(currentX);
-    if (touchStart !== null) {
-      const distance = touchStart - currentX;
-      setSwipeDirection(distance > 0 ? 'left' : 'right');
-    }
-  };
-
-  const onTouchEnd = () => {
-    if (touchStart === null || touchEnd === null) {
-      setIsSwiping(false);
-      setSwipeDirection(null);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe) {
-      goToNextArticle();
-    } else if (isRightSwipe) {
-      goToPreviousArticle();
-    }
-
-    setIsSwiping(false);
-    setSwipeDirection(null);
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
-
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId);
-    setCurrentArticleIndex(0);
     // Update URL without reloading
     const url = categoryId === 'top' ? '/news' : `/news?category=${categoryId.toLowerCase()}`;
     window.history.pushState({}, '', url);
   };
 
-  const handleDotClick = (index: number) => {
-    const direction = index > currentArticleIndex ? 'left' : 'right';
-    setAnimationDirection(direction);
-    setCurrentArticleIndex(index);
-  };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
-        goToNextArticle();
-      } else if (e.key === 'ArrowLeft') {
-        goToPreviousArticle();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentArticleIndex, newsItems.length]);
-
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-6 max-w-5xl flex items-center justify-center h-64">
+      <div className="container mx-auto px-4 py-6 max-w-7xl flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-4">
           <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
           <span className="text-muted-foreground font-medium">Loading top stories...</span>
@@ -234,7 +143,7 @@ const NewsFeed: React.FC = () => {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-6 max-w-5xl flex items-center justify-center h-64">
+      <div className="container mx-auto px-4 py-6 max-w-7xl flex items-center justify-center h-64">
         <div className="max-w-md w-full p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-center">
           <div className="text-red-500 text-5xl mb-4">!</div>
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
@@ -252,10 +161,8 @@ const NewsFeed: React.FC = () => {
     );
   }
 
-  const deviceType = getDeviceType();
-
   return (
-    <div className="container mx-auto px-4 py-6 max-w-5xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
       <CategoryTabs
         categories={categories}
         activeCategory={activeCategory}
@@ -266,72 +173,12 @@ const NewsFeed: React.FC = () => {
           <p className="text-muted-foreground">No articles found for this category.</p>
         </div>
       ) : (
-        <div className="relative mt-6">
-          <div
-            className="relative overflow-hidden"
-            {...(deviceType === 'mobile'
-              ? {
-                  onTouchStart,
-                  onTouchMove,
-                  onTouchEnd,
-                }
-              : {})}
-          >
-            {newsItems.length > 0 && (
-              <div
-                className={cn(
-                  'transition-all duration-300 ease-in-out',
-                  animationDirection === 'left' ? 'animate-slide-in-right' : '',
-                  animationDirection === 'right' ? 'animate-slide-in-left' : '',
-                )}
-              >
-                <NewsCard article={newsItems[currentArticleIndex]} />
-              </div>
-            )}
-            {deviceType === 'mobile' && isSwiping && swipeDirection && (
-              <div
-                className={cn(
-                  'absolute top-1/2 transform -translate-y-1/2 bg-primary/20 backdrop-blur-sm rounded-full p-4',
-                  swipeDirection === 'left' ? 'right-4 animate-pulse' : 'left-4 animate-pulse',
-                )}
-              >
-                {swipeDirection === 'left' ? (
-                  <ChevronRightIcon className="h-6 w-6 text-primary" />
-                ) : (
-                  <ChevronLeftIcon className="h-6 w-6 text-primary" />
-                )}
-              </div>
-            )}
-          </div>
-          {deviceType !== 'mobile' && (
-            <div className="flex justify-between mt-4">
-              <Button
-                onClick={goToPreviousArticle}
-                disabled={currentArticleIndex === 0}
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                aria-label="Previous article"
-              >
-                <ChevronLeftIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={goToNextArticle}
-                disabled={currentArticleIndex === newsItems.length - 1}
-                variant="outline"
-                size="icon"
-                className="rounded-full"
-                aria-label="Next article"
-              >
-                <ChevronRightIcon className="h-4 w-4" />
-              </Button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {newsItems.map((article) => (
+            <div key={article.id} className="transform transition-all duration-300 hover:scale-[1.02]">
+              <NewsCard article={article} />
             </div>
-          )}
-          <PaginationDots
-            total={newsItems.length}
-            current={currentArticleIndex}
-            onChange={handleDotClick}
-          />
+          ))}
         </div>
       )}
     </div>

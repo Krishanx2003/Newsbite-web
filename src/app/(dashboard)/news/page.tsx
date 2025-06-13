@@ -1,6 +1,7 @@
 'use client';
 import { Suspense } from 'react';
 import NewsFeed from './_components/NewsFeed';
+import HeroSection from './_components/HeroSection';
 
 export default function NewsPage() {
   return (
@@ -16,6 +17,8 @@ export default function NewsPage() {
         }
       >
         <NewsFeed />
+
+        <HeroSection />
       </Suspense>
     </div>
   );
