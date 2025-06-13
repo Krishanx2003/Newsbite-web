@@ -6,6 +6,7 @@ import HeroSection from './_components/HeroSection';
 export default function NewsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
+        <HeroSection />
       <Suspense
         fallback={
           <div className="container mx-auto px-4 py-6 max-w-5xl flex items-center justify-center h-64">
@@ -18,7 +19,7 @@ export default function NewsPage() {
       >
         <NewsFeed />
 
-        <HeroSection />
+      
       </Suspense>
     </div>
   );
