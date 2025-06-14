@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Instagram, Twitter, Share2, Mail } from 'lucide-react';
+import { MessageCircle, Twitter, Share2, Mail } from 'lucide-react';
 
 export const Footer = () => {
   const [email, setEmail] = useState("");
@@ -65,19 +65,19 @@ export const Footer = () => {
           <div>
             <h4 className="font-bold text-lg mb-4">About</h4>
             <ul className="space-y-2 text-black ">
-              <li><a href="#" className="hover:text-electric-purple">Our Story</a></li>
-              <li><a href="#" className="hover:text-electric-purple">Team</a></li>
-              <li><a href="#" className="hover:text-electric-purple">Careers</a></li>
-              <li><a href="#" className="hover:text-electric-purple">Contact</a></li>
+              <li><a href="/our-story" className="hover:text-electric-purple">Our Story</a></li>
+              <li><a href="/team" className="hover:text-electric-purple">Team</a></li>
+              <li><a href="/careers" className="hover:text-electric-purple">Careers</a></li>
+              <li><a href="/contact" className="hover:text-electric-purple">Contact</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-lg mb-4">Legal</h4>
             <ul className="space-y-2 text-black ">
-              <li><a href="#" className="hover:text-electric-purple">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-electric-purple">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-electric-purple">Cookie Policy</a></li>
+              <li><a href="/privacy-policy" className="hover:text-electric-purple">Privacy Policy</a></li>
+              <li><a href="/terms-of-service" className="hover:text-electric-purple">Terms of Service</a></li>
+              <li><a href="/cookie-policy" className="hover:text-electric-purple">Cookie Policy</a></li>
             </ul>
           </div>
 
@@ -85,16 +85,20 @@ export const Footer = () => {
             <h4 className="font-bold text-lg mb-4">Connect</h4>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://whatsapp.com/channel/0029VbAFleF84OmGwXijc91T"
                 className="w-10 h-10 rounded-full text-black  flex items-center justify-center hover:bg-electric-purple transition-colors"
-                aria-label="Instagram"
+                aria-label="WhatsApp"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Instagram className="w-5 h-5" />
+                <MessageCircle className="w-5 h-5" />
               </a>
               <a
-                href="#"
+                href="https://x.com/newsbite_in"
                 className="w-10 h-10 rounded-full text-black  flex items-center justify-center hover:bg-electric-purple transition-colors"
-                aria-label="Twitter"
+                aria-label="X (Twitter)"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Twitter className="w-5 h-5" />
               </a>

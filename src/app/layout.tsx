@@ -74,7 +74,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <Script
           async
@@ -84,7 +84,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body
-        className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-off-white dark:bg-near-black text-gray-800 dark:text-gray-200`}
+        className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-background text-foreground font-sans`}
         suppressHydrationWarning
       >
         <ThemeProvider
