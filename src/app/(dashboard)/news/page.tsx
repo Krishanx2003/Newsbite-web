@@ -1,16 +1,27 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import NewsFeed from './_components/NewsFeed';
 import HeroSection from './_components/HeroSection';
 import SearchBar from './_components/SearchBar';
+import CategoryFilter from './_components/CategoryFilter';
 
 export default function NewsPage() {
+  const [filters, setFilters] = useState({
+    date: undefined as Date | undefined,
+    category: 'All',
+  });
+
+  const handleFilterChange = (newFilters: { date: Date | undefined; category: string }) => {
+    setFilters(newFilters);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
       <HeroSection />
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="mb-8">
+        <div className="mb-8 space-y-4">
           <SearchBar />
+          <CategoryFilter onFilterChange={handleFilterChange} />
         </div>
         <Suspense
           fallback={
@@ -22,7 +33,7 @@ export default function NewsPage() {
             </div>
           }
         >
-          <NewsFeed />
+          <NewsFeed filters={filters} />
         </Suspense>
       </div>
     </div>

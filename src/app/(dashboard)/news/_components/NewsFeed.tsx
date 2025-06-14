@@ -61,7 +61,14 @@ interface News {
   timeAgo?: string;
 }
 
-const NewsFeed: React.FC = () => {
+interface NewsFeedProps {
+  filters: {
+    date: Date | undefined;
+    category: string;
+  };
+}
+
+const NewsFeed: React.FC<NewsFeedProps> = ({ filters }) => {
   const [newsItems, setNewsItems] = useState<News[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('top');
@@ -99,18 +106,17 @@ const NewsFeed: React.FC = () => {
 
         let filteredNews = formattedNews.filter((item) => item.is_published);
 
-        // Get category from URL query parameter
-        const urlCategory = searchParams.get('category')?.toLowerCase() || 'top';
-        setActiveCategory(urlCategory);
-
-        if (urlCategory !== 'top') {
-          filteredNews = filteredNews.filter((item) => item.category?.toLowerCase() === urlCategory);
+        // Apply category filter
+        if (filters.category && filters.category !== 'All') {
+          filteredNews = filteredNews.filter((item) => 
+            item.category?.toLowerCase() === filters.category.toLowerCase()
+          );
         }
 
         setNewsItems(filteredNews);
 
         const uniqueCategories = [
-          'top',
+          'All',
           ...new Set(formattedNews.filter((item) => item.category).map((item) => item.category!)),
         ];
         setCategories(uniqueCategories);
@@ -121,14 +127,7 @@ const NewsFeed: React.FC = () => {
       }
     };
     fetchNews();
-  }, [searchParams]);
-
-  const handleCategoryChange = (categoryId: string) => {
-    setActiveCategory(categoryId);
-    // Update URL without reloading
-    const url = categoryId === 'top' ? '/news' : `/news?category=${categoryId.toLowerCase()}`;
-    window.history.pushState({}, '', url);
-  };
+  }, [filters]);
 
   if (isLoading) {
     return (
@@ -166,7 +165,7 @@ const NewsFeed: React.FC = () => {
       <CategoryTabs
         categories={categories}
         activeCategory={activeCategory}
-        onSelectCategory={handleCategoryChange}
+        onSelectCategory={(category) => setActiveCategory(category)}
       />
       {newsItems.length === 0 ? (
         <div className="flex items-center justify-center h-64">
