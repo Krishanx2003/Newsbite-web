@@ -26,9 +26,16 @@ const fredokaOne = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: 'NewsBite - Latest News and Updates',
-  keywords: 'news, articles, insights, newsbite, breaking news, current events, world news',
-  description: 'Stay informed with the latest news, breaking stories, and in-depth analysis from around the world.',
+  title: {
+    default: 'NewsBite - Latest News and Updates',
+    template: '%s | NewsBite'
+  },
+  keywords: 'news, articles, insights, newsbite, breaking news, current events, world news, latest updates, trending news, global news',
+  description: 'Stay informed with the latest news, breaking stories, and in-depth analysis from around the world. Get real-time updates on politics, technology, business, sports, and more.',
+  metadataBase: new URL('https://newsbite.in'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'NewsBite - Latest News and Updates',
     description: 'Stay informed with the latest news, breaking stories, and in-depth analysis from around the world.',
@@ -39,7 +46,7 @@ export const metadata: Metadata = {
         url: '/og-default.jpg',
         width: 1200,
         height: 630,
-        alt: 'NewsBite',
+        alt: 'NewsBite - Your Source for Latest News',
       },
     ],
     locale: 'en_US',
@@ -51,6 +58,7 @@ export const metadata: Metadata = {
     description: 'Stay informed with the latest news, breaking stories, and in-depth analysis from around the world.',
     images: ['/og-default.jpg'],
     creator: '@newsbite_in',
+    site: '@newsbite_in',
   },
   robots: {
     index: true,
@@ -62,13 +70,19 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+    nocache: true,
   },
   verification: {
     google: 'ca-pub-3778747736249937',
-    // yandex: 'your-yandex-verification',
   },
   other: {
     'google-adsense-account': 'ca-pub-3778747736249937',
+    'format-detection': 'telephone=no',
+    'theme-color': '#ffffff',
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'NewsBite',
   },
 };
 
