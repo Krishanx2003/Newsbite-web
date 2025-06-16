@@ -1,18 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { HomeIcon, NewspaperIcon, UsersIcon, ChartBarIcon, CogIcon, CurrencyDollarIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, NewspaperIcon, UsersIcon, QuestionMarkCircleIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: HomeIcon },
-  { name: 'Content', href: '/admin/content', icon: NewspaperIcon },
-  { name: 'Users', href: '/admin/users', icon: UsersIcon },
-  { name: 'Polls & Quizzes', href: '/admin/polls', icon: QuestionMarkCircleIcon },
-  { name: 'Monetization', href: '/admin/monetization', icon: CurrencyDollarIcon },
-  { name: 'Analytics', href: '/admin/analytics', icon: ChartBarIcon },
-  { name: 'Settings', href: '/admin/settings', icon: CogIcon },
+  { name: 'Overview', href: '/admin', icon: HomeIcon },
+  { name: 'Article', href: '/admin/article', icon: NewspaperIcon },
+  { name: 'News', href: '/admin/news', icon: UsersIcon },
+  { name: 'Category', href: '/admin/categories', icon: QuestionMarkCircleIcon },
+  { name: 'Poll', href: '/admin/polls', icon: CurrencyDollarIcon },
 ];
 
 export default function Sidebar() {
