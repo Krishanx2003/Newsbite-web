@@ -8,23 +8,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Commenting out authentication check for testing
-  /*
-  if (!user) {
-    redirect('/login');
-  }
+  // if (!user) {
+  //   redirect('/login');
+  // }
 
-  // Check if user has admin role
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+  // // Check if user has admin role
+  // const { data: profile } = await supabase
+  //   .from('profiles')
+  //   .select('role')
+  //   .eq('id', user.id)
+  //   .single();
 
-  if (profile?.role !== 'admin') {
-    redirect('/');
-  }
-  */
+  // if (profile?.role !== 'admin') {
+  //   redirect('/');
+  // }
 
   return (
     <ThemeProvider>
