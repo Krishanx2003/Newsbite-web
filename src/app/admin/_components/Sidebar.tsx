@@ -11,6 +11,7 @@ const navItems = [
   { name: 'News', href: '/admin/news', icon: UsersIcon },
   { name: 'Category', href: '/admin/categories', icon: QuestionMarkCircleIcon },
   { name: 'Poll', href: '/admin/polls', icon: CurrencyDollarIcon },
+  { name: 'Insight', href: '/admin/insights', icon: CurrencyDollarIcon },
 ];
 
 export default function Sidebar() {

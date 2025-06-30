@@ -39,6 +39,7 @@ export default function AdminArticlesPage() {
   // Check admin role and fetch articles
   useEffect(() => {
     const checkAdminAndFetch = async () => {
+      // Admin role check is handled in middleware and layout
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         setError('Unauthorized: Please log in');
@@ -77,8 +78,8 @@ export default function AdminArticlesPage() {
         throw new Error(`Failed to fetch articles: ${response.status}`);
       }
       const data = await response.json();
-      if (!Array.isArray(data)) throw new Error('Invalid articles data');
-      setArticles(data);
+      if (!Array.isArray(data.articles)) throw new Error('Invalid articles data');
+      setArticles(data.articles);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch articles');
       toast.error(err instanceof Error ? err.message : 'Failed to fetch articles');
@@ -147,21 +148,7 @@ export default function AdminArticlesPage() {
             <h1 className="text-3xl font-bold">Admin Articles</h1>
             <p className="text-sm mt-1">Manage articles</p>
           </div>
-          <div className="flex space-x-4">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="p-2 rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center py-2 px-4 bg-red-600 hover:bg-red-700 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              <FaSignOutAlt className="mr-2" /> Logout
-            </button>
-          </div>
+         
         </div>
       </header>
 
@@ -245,7 +232,7 @@ export default function AdminArticlesPage() {
                     </div>
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => router.push(`/admin/articles/edit?id=${article.id}`)}
+                        onClick={() => router.push(`/admin/article/edit?id=${article.id}`)}
                         className="p-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         title="Edit"
                       >
