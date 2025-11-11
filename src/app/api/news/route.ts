@@ -3,7 +3,7 @@ import { createClient } from '@/lib/server';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  
+
   // Parse form data for file upload or image URL
   const formData = await request.formData();
   const title = formData.get('title') as string;
@@ -83,7 +83,7 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   const supabase = await createClient();
-  
+
   // Parse form data for file upload or image URL
   const formData = await request.formData();
   const id = formData.get('id') as string;

@@ -115,8 +115,8 @@ export default function ArticlesPage() {
           <div className="text-4xl mb-4">😕</div>
           <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
           <p>{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Try again
@@ -128,7 +128,7 @@ export default function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
-    
+
 
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -136,7 +136,7 @@ export default function ArticlesPage() {
           <div className="md:flex md:justify-between md:items-center">
             <div className="mb-8 md:mb-0 md:max-w-2xl">
               <h1 className="text-4xl sm:text-5xl font-extrabold font-montserrat leading-tight">
-                Discover Inspiring <br className="hidden md:inline" /> 
+                Discover Inspiring <br className="hidden md:inline" />
                 <span className="text-yellow-300">Ideas & Insights</span>
               </h1>
               <p className="mt-4 text-lg font-inter text-blue-100 max-w-xl">
@@ -145,8 +145,8 @@ export default function ArticlesPage() {
             </div>
             <div className="relative w-full md:w-96 h-64 rounded-xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-blue-900 opacity-40 z-10 rounded-xl"></div>
-              <Image 
-                src="/articlemockup.png" 
+              <Image
+                src="/articlemockup.png"
                 alt="Blog hero image"
                 fill
                 className="object-cover"
@@ -168,7 +168,7 @@ export default function ArticlesPage() {
                 {selectedCategory ? `Showing articles in "${selectedCategory}"` : 'Showing all articles'} • Page {page} of {totalPages}
               </p>
             </div>
-            
+
             <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
               <div className="relative">
                 <form onSubmit={handleSearchSubmit}>
@@ -182,7 +182,7 @@ export default function ArticlesPage() {
                   <FaSearch className="absolute left-3 top-3 text-gray-400" />
                 </form>
               </div>
-              
+
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
@@ -343,7 +343,7 @@ export default function ArticlesPage() {
               >
                 <FaArrowLeft size={16} />
               </button>
-              
+
               {Array.from({ length: totalPages }).map((_, idx) => {
                 const pageNum = idx + 1;
                 // Only show nearby pages and first/last page
@@ -356,11 +356,10 @@ export default function ArticlesPage() {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`w-10 h-10 flex items-center justify-center border-r border-gray-200 dark:border-gray-700 text-sm font-medium ${
-                        page === pageNum
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
+                      className={`w-10 h-10 flex items-center justify-center border-r border-gray-200 dark:border-gray-700 text-sm font-medium ${page === pageNum
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        }`}
                     >
                       {pageNum}
                     </button>
@@ -381,7 +380,7 @@ export default function ArticlesPage() {
                 }
                 return null;
               })}
-              
+
               <button
                 onClick={() => handlePageChange(page + 1)}
                 disabled={page === totalPages}

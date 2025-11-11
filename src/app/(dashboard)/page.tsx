@@ -36,7 +36,7 @@ export default async function Home() {
   // Determine base URL based on environment
   const baseUrl =
     process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_API_URL || 
+      ? process.env.NEXT_PUBLIC_API_URL ||
       "https://www.newsbite.in/"
       : "http://localhost:3000";
 
@@ -120,16 +120,16 @@ export default async function Home() {
             <ArticleGrid
               articles={articles.slice(0, 3)}
             />
-            
+
             {/* Middle Ad - Only show if we have content */}
             {articles.length >= 3 && (
-              <AdContainer 
-                position="middle" 
-                className="my-8" 
+              <AdContainer
+                position="middle"
+                className="my-8"
                 hasContent={articles.length >= 3}
               />
             )}
-            
+
             <ArticleGrid
               articles={articles.slice(3, 6)}
             />

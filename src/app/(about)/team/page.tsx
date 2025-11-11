@@ -32,7 +32,6 @@ export default function Team() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8 text-center">Meet Our Team</h1>
-      
       <p className="text-gray-700 text-center max-w-2xl mx-auto mb-12">
         We're a diverse group of passionate individuals united by our love for pop culture and commitment to delivering engaging content.
       </p>
@@ -62,8 +61,8 @@ export default function Team() {
         <p className="text-gray-700 mb-6">
           We're always looking for talented individuals who share our passion for pop culture and digital media.
         </p>
-        <a 
-          href="/careers" 
+        <a
+          href="/careers"
           className="inline-block bg-electric-purple text-white px-6 py-3 rounded-md hover:bg-opacity-90 transition-colors"
         >
           View Open Positions

@@ -24,10 +24,10 @@ const Background: React.FC = () => {
     <div className="fixed inset-0 overflow-hidden bg-gradient-to-br from-gray-900 via-indigo-900 to-gray-900">
       {/* Animated gradient */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]"></div>
-      
+
       {/* Animated news bubbles */}
       {NEWS_BUBBLES.map(bubble => (
-        <div 
+        <div
           key={bubble.id}
           className={`absolute rounded-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 backdrop-blur-lg ${bubble.size}`}
           style={{
@@ -38,10 +38,10 @@ const Background: React.FC = () => {
           }}
         />
       ))}
-      
+
       {/* News snippets */}
       {NEWS_SNIPPETS.map(snippet => (
-        <div 
+        <div
           key={snippet.id}
           className={`absolute ${snippet.color} opacity-20 px-4 py-2 rounded-lg text-xs font-bold text-white transform`}
           style={{

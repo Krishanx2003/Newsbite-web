@@ -9,7 +9,7 @@ interface TextSizeContextType {
 
 const TextSizeContext = createContext<TextSizeContextType>({
   textSize: 'medium',
-  setTextSize: () => {},
+  setTextSize: () => { },
 });
 
 export const TextSizeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

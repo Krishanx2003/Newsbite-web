@@ -70,9 +70,8 @@ export const HeroCarousel = ({ articles = [] }: HeroCarouselProps) => {
       {articles.map((article, index) => (
         <div
           key={article.id}
-          className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
-            index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${index === currentIndex ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
         >
           <div className="relative h-full w-full">
             <img
@@ -126,9 +125,8 @@ export const HeroCarousel = ({ articles = [] }: HeroCarouselProps) => {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all ${
-              index === currentIndex ? "bg-blue-600 w-6" : "bg-gray-200/50"
-            }`}
+            className={`w-2 h-2 rounded-full transition-all ${index === currentIndex ? "bg-blue-600 w-6" : "bg-gray-200/50"
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

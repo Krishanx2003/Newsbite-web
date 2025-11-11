@@ -12,10 +12,10 @@ interface ArticleGridProps {
   className?: string;
 }
 
-const ArticleGrid: React.FC<ArticleGridProps> = ({ 
-  articles, 
-  loading = false, 
-  className = "" 
+const ArticleGrid: React.FC<ArticleGridProps> = ({
+  articles,
+  loading = false,
+  className = ""
 }) => {
   if (loading) {
     return (

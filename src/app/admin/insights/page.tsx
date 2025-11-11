@@ -199,7 +199,7 @@ const AdminInsights = () => {
 
   const generateTrendData = (data: any[], labels: string[]): number[] => {
     const counts = new Array(labels.length).fill(0);
-    
+
     data.forEach((item: any) => {
       const date = new Date(item.created_at);
       const index = labels.findIndex(label => {
@@ -244,11 +244,10 @@ const AdminInsights = () => {
             <button
               key={timeFrame.value}
               onClick={() => setSelectedTimeFrame(timeFrame)}
-              className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
-                selectedTimeFrame.value === timeFrame.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
-              }`}
+              className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${selectedTimeFrame.value === timeFrame.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                }`}
             >
               <FaCalendarAlt />
               <span>{timeFrame.label}</span>

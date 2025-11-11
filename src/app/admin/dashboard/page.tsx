@@ -312,11 +312,10 @@ export default function AdminDashboard() {
           {['polls', 'options', 'votes', 'news'].map((tab) => (
             <button
               key={tab}
-              className={`py-3 px-6 text-sm font-medium transition-colors duration-200 ${
-                activeTab === tab
+              className={`py-3 px-6 text-sm font-medium transition-colors duration-200 ${activeTab === tab
                   ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-              }`}
+                }`}
               onClick={() => setActiveTab(tab)}
               aria-selected={activeTab === tab}
               role="tab"

@@ -118,7 +118,7 @@ const AdminPanel = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h1>
-      
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* News Card */}
@@ -186,22 +186,22 @@ const AdminPanel = () => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Link href="/admin/news/new" className="block">
+          <Link href="/admin/news" className="block">
             <button className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
               Add News
             </button>
           </Link>
-          <Link href="/admin/categories/new" className="block">
+          <Link href="/admin/categories" className="block">
             <button className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
               Add Category
             </button>
           </Link>
-          <Link href="/admin/polls/new" className="block">
+          <Link href="/admin/polls" className="block">
             <button className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
               Create Poll
             </button>
           </Link>
-          <Link href="/admin/article/new" className="block">
+          <Link href="/admin/article" className="block">
             <button className="w-full py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors">
               Write Article
             </button>

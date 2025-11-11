@@ -689,9 +689,8 @@ const ArticleForm: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`px-6 py-3 rounded-full text-white transition-colors ${
-              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
-            }`}
+            className={`px-6 py-3 rounded-full text-white transition-colors ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-500 hover:bg-indigo-600'
+              }`}
           >
             {isLoading ? 'Submitting...' : articleId ? 'Update Article' : 'Create Article'}
           </button>

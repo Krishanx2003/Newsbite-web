@@ -108,7 +108,7 @@ const NewsFeed: React.FC<NewsFeedProps> = ({ filters }) => {
 
         // Apply category filter
         if (filters.category && filters.category !== 'All') {
-          filteredNews = filteredNews.filter((item) => 
+          filteredNews = filteredNews.filter((item) =>
             item.category?.toLowerCase() === filters.category.toLowerCase()
           );
         }

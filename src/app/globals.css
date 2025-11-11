@@ -49,13 +49,15 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.25 0.15 240); /* Navy blue */
+  --primary: oklch(0.25 0.15 240);
+  /* Navy blue */
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.25 0.15 240);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.65 0.25 0); /* Red accent */
+  --accent: oklch(0.65 0.25 0);
+  /* Red accent */
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.65 0.25 0);
   --border: oklch(0.922 0 0);
@@ -103,6 +105,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -121,9 +124,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -132,6 +137,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

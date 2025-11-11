@@ -6,9 +6,9 @@ import TechSection from './_component/techsection'
 const TechPage = () => {
   return (
     <>
-    <TechSection />
-    <div>TechPage</div>
-</>
+      <TechSection />
+      <div>TechPage</div>
+    </>
   )
 }
 

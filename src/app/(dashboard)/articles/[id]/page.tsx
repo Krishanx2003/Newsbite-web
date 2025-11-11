@@ -175,9 +175,8 @@ export default function ArticleDetailPage() {
 
       {/* Floating Action Bar */}
       <div
-        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-gray-800 to-gray-900 backdrop-blur-lg border rounded-full px-6 py-3 shadow-xl transition-all duration-500 ease-in-out ${
-          showFloatingBar ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
-        }`}
+        className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-gray-800 to-gray-900 backdrop-blur-lg border rounded-full px-6 py-3 shadow-xl transition-all duration-500 ease-in-out ${showFloatingBar ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+          }`}
       >
         <div className="flex items-center gap-4">
           <Button
@@ -416,26 +415,26 @@ export default function ArticleDetailPage() {
 
             {/* Latest Articles */}
             <div className="mt-12">
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">Article Title 1</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
-                </Card>
-                <Card className="p-4">
-                  <h3 className="font-semibold text-md mb-2">Article Title 2</h3>
-                  <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
-                </Card>
-                <div className="flex flex-wrap gap-2">
-                  {article.tags.slice(0, 2).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+              <Card className="p-4">
+                <h3 className="font-semibold text-md mb-2">Article Title 1</h3>
+                <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
+              </Card>
+              <Card className="p-4">
+                <h3 className="font-semibold text-md mb-2">Article Title 2</h3>
+                <p className="text-sm text-muted-foreground">A brief summary of the article goes here...</p>
+              </Card>
+              <div className="flex flex-wrap gap-2">
+                {article.tags.slice(0, 2).map((tag) => (
+                  <Badge key={tag} variant="outline" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
               </div>
-            </aside>
-          </div>
+            </div>
+          </aside>
         </div>
       </div>
-    
+    </div>
+
   );
 }

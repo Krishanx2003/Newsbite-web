@@ -46,7 +46,7 @@ export default function CategoryForm({ onCategoryAdded }: CategoryFormProps) {
         <h3 className="text-lg font-medium leading-6 text-gray-900">Add New Category</h3>
         <p className="mt-1 text-sm text-gray-500">Create a new category to organize your products</p>
       </div>
-      
+
       <form onSubmit={handleSubmit} className="p-6">
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -82,9 +82,8 @@ export default function CategoryForm({ onCategoryAdded }: CategoryFormProps) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 ${
-              isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
-            }`}
+            className={`w-full flex justify-center items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+              }`}
           >
             {isSubmitting ? (
               <>

@@ -20,9 +20,8 @@ export default function Sidebar() {
 
   return (
     <div
-      className={`bg-dark-gray transition-all duration-300 ${
-        isCollapsed ? 'w-16' : 'w-64'
-      } flex flex-col`}
+      className={`bg-dark-gray transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'
+        } flex flex-col`}
     >
       {/* Toggle Button */}
       <button
@@ -38,11 +37,10 @@ export default function Sidebar() {
           <Link
             key={item.name}
             href={item.href}
-            className={`flex items-center p-2 mb-2 rounded-lg ${
-              pathname === item.href
+            className={`flex items-center p-2 mb-2 rounded-lg ${pathname === item.href
                 ? 'bg-neon-blue text-dark-gray'
                 : 'hover:bg-hot-pink hover:text-dark-gray'
-            }`}
+              }`}
           >
             <item.icon className="w-6 h-6 mr-2" />
             {!isCollapsed && <span>{item.name}</span>}

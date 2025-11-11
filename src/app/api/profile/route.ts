@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
-  
+
   // Verify user authentication
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {

@@ -13,21 +13,21 @@ const newsItems = [
 
 const NewsTicker: React.FC = () => {
   const tickerRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
     const tickerElement = tickerRef.current;
     if (!tickerElement) return;
-    
+
     const tickerContent = tickerElement.querySelector('.ticker-content');
     if (!tickerContent) return;
-    
+
     // Clone the ticker content to create a seamless loop
     tickerElement.appendChild(tickerContent.cloneNode(true));
-    
+
   }, []);
-  
+
   return (
-    <div 
+    <div
       ref={tickerRef}
       className="w-full overflow-hidden bg-gray-800 rounded-lg py-2"
     >

@@ -33,8 +33,8 @@ export default function HeroSection() {
         // Filter only published news and sort by published_at
         const publishedNews = data
           .filter((item: NewsItem) => item.is_published)
-          .sort((a: NewsItem, b: NewsItem) => 
-            new Date(b.published_at || b.created_at).getTime() - 
+          .sort((a: NewsItem, b: NewsItem) =>
+            new Date(b.published_at || b.created_at).getTime() -
             new Date(a.published_at || a.created_at).getTime()
           );
         setNews(publishedNews);
@@ -98,7 +98,7 @@ export default function HeroSection() {
   return (
     <div className="relative h-96 md:h-[500px] overflow-hidden rounded-lg group">
       {/* Background Image */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out"
         style={{
           backgroundImage: `url(${currentNews.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop'})`,
@@ -119,7 +119,7 @@ export default function HeroSection() {
           </div>
 
           {/* Title */}
-          <h1 
+          <h1
             className="text-2xl md:text-4xl font-serif font-bold mb-4 leading-tight cursor-pointer hover:text-blue-300 transition-colors"
             onClick={() => handleArticleClick(currentNews.id)}
           >
@@ -174,9 +174,8 @@ export default function HeroSection() {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
-              index === currentIndex ? 'bg-white' : 'bg-white/40'
-            }`}
+            className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? 'bg-white' : 'bg-white/40'
+              }`}
           />
         ))}
       </div>

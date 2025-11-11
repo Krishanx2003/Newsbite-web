@@ -17,11 +17,11 @@ export default function NewsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-300">
-     
+
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-7xl">
         <HeroSection />
-        
+
         {/* Search and Filters Section */}
         <div className="mb-12 mt-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="w-full md:w-1/2">

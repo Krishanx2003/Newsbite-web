@@ -8,7 +8,7 @@ import NewsCard from '@/app/(dashboard)/news/_components/NewsCard';
 interface News {
   id: string;
   title: string
-  
+
   ;
   content: string;
   category: string | null;

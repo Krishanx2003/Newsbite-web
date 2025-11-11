@@ -1,22 +1,22 @@
 export interface Author {
-    name: string;
-    avatar: string;
-  }
-  
-  export interface FormData {
-    title: string;
-    subtitle: string;
-    author: Author;
-    date: string;
-    readTime: string;
-    category: string;
-    content: string;
-    tags: string[];
-    imageFile: File | null;
-    imageUrl: string;
-  }
+  name: string;
+  avatar: string;
+}
 
-  // types/article.ts
+export interface FormData {
+  title: string;
+  subtitle: string;
+  author: Author;
+  date: string;
+  readTime: string;
+  category: string;
+  content: string;
+  tags: string[];
+  imageFile: File | null;
+  imageUrl: string;
+}
+
+// types/article.ts
 export interface Article {
   id: string;
   title: string;

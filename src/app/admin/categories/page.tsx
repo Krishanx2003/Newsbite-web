@@ -29,10 +29,10 @@ export default function CategoriesPage() {
 
       const categories = await response.json();
       const now = new Date();
-      
+
       setMetrics({
         totalCategories: categories.length,
-        lastUpdated: categories.length > 0 
+        lastUpdated: categories.length > 0
           ? new Date(Math.max(...categories.map((c: any) => new Date(c.created_at).getTime()))).toLocaleString()
           : 'Never',
         activeCategories: categories.length // Assuming all categories are active for now

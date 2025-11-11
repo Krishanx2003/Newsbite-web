@@ -28,7 +28,7 @@ const CategoryNavContent: React.FC<CategoryNavProps> = ({ categories, className 
       >
         All
       </Link>
-      
+
       {categories.map((category) => (
         <Link
           key={category}

@@ -81,7 +81,7 @@ export default function Contact() {
         <div className="space-y-8">
           <div className="bg-white p-8 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold mb-6">Get in Touch</h2>
-            
+
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
                 <Mail className="w-6 h-6 text-electric-purple mt-1" />

@@ -4,7 +4,7 @@ export default function CookiePolicy() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8">Cookie Policy</h1>
-      
+
       <div className="space-y-8">
         <section>
           <h2 className="text-2xl font-semibold mb-4">1. What Are Cookies</h2>
@@ -48,10 +48,10 @@ export default function CookiePolicy() {
           <h2 className="text-2xl font-semibold mb-4">4. Managing Cookies</h2>
           <p className="text-gray-700 mb-4">
             Most web browsers allow you to control cookies through their settings preferences. However, limiting cookies may impact your experience using our website. To learn more about cookies and how to manage them, visit{' '}
-            <a 
-              href="https://www.aboutcookies.org" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://www.aboutcookies.org"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-electric-purple hover:underline"
             >
               www.aboutcookies.org

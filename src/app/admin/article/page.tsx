@@ -148,7 +148,7 @@ export default function AdminArticlesPage() {
             <h1 className="text-3xl font-bold">Admin Articles</h1>
             <p className="text-sm mt-1">Manage articles</p>
           </div>
-         
+
         </div>
       </header>
 
