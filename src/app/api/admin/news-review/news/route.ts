@@ -28,7 +28,7 @@ function toISOStringSafe(input?: string): string | undefined {
 async function fetchRssFeed(feed: FeedConfig, parser: xml2js.Parser): Promise<Article[]> {
 	const res = await fetch(feed.url)
 	const xml = await res.text()
-	// @ts-expect-error xml2js types
+	// @ts-ignore xml2js types
 	const parsed = await parser.parseStringPromise(xml)
 
 	let items: any[] = []

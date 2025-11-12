@@ -67,15 +67,15 @@
     "react-hook-form": "^7.56.1",
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^3.0.0",
-    "swr": "^2.3.6",
-    "xml2js": "^0.6.2",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
     "sanitize-html": "^2.17.0",
     "sonner": "^2.0.3",
+    "swr": "^2.3.6",
     "tailwind-merge": "^3.3.1",
     "tiptap-markdown": "^0.8.10",
     "vaul": "^1.1.2",
+    "xml2js": "^0.6.2",
     "zod": "^3.24.3"
   },
   "devDependencies": {
@@ -85,6 +85,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sanitize-html": "^2.16.0",
+    "@types/xml2js": "^0.4.14",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5"
