@@ -131,7 +131,7 @@ export default function ArticlesPage() {
 
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="bg-gradient-to-r from-red-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center md:text-left">
           <div className="md:flex md:justify-between md:items-center">
             <div className="mb-8 md:mb-0 md:max-w-2xl">
@@ -143,14 +143,14 @@ export default function ArticlesPage() {
                 Explore our collection of thought-provoking articles written by experts across various fields.
               </p>
             </div>
-            <div className="relative w-full md:w-96 h-64 rounded-xl overflow-hidden shadow-2xl">
-              <div className="absolute inset-0 bg-blue-900 opacity-40 z-10 rounded-xl"></div>
+            <div className="relative w-full md:w-200 h-64 rounded-xl overflow-hidden shadow-2xl">
+              <div className="absolute inset-0  opacity-40 z-10 rounded-xl"></div>
               <Image
-                src="/articlemockup.png"
+                src="/newsbite-banner.jpeg"
                 alt="Blog hero image"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 384px"
+                sizes="(max-width: 500px) 100vw, 1500px"
               />
             </div>
           </div>

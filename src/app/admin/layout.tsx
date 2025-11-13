@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/server';
-import { ThemeProvider } from '@/components/theme-provider';
+
 import Header from './_components/Header';
 import { AdminSidebar } from './_components/AdminSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!profile || profile.role !== 'admin') redirect('/');
 
   return (
-    <ThemeProvider>
+
       <div className="flex h-screen overflow-hidden">
         <AdminSidebar />
         <div className="flex flex-col flex-1">
@@ -29,6 +29,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </main>
         </div>
       </div>
-    </ThemeProvider>
+
   );
 }

@@ -1,6 +1,6 @@
 import { Footer } from '@/components/Footer';
 import Navbar from '@/components/Navbar';
-import { ThemeProvider } from '@/components/theme-provider';
+
 import { BookmarkProvider } from '@/context/BookmarkContext';
 
 import type { Metadata } from 'next';
@@ -17,7 +17,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      <ThemeProvider>
+  
         <BookmarkProvider>
           <main className="pt-16">
             <Navbar />
@@ -25,7 +25,7 @@ export default function DashboardLayout({
             <Footer />
           </main>
         </BookmarkProvider>
-      </ThemeProvider>
+ 
     </div>
   );
 }
