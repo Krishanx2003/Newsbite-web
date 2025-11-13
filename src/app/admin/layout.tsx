@@ -1,42 +1,30 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/server';
-import Header from './_components/Header';
-import Sidebar from './_components/Sidebar';
 import { ThemeProvider } from '@/components/theme-provider';
+import Header from './_components/Header';
+import { AdminSidebar } from './_components/AdminSidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect('/login');
-  }
-
-  // Check if user has admin role
-  const { data: profile, error: profileError } = await supabase
+  // Uncomment if needed for auth checks:
+  if (!user) redirect('/login');
+  const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
-
-  // If profile is missing, role is not admin, or there was an error, redirect
-  if (!profile || profile?.role !== 'admin' || profileError) {
-    redirect('/');
-  }
+  if (!profile || profile.role !== 'admin') redirect('/');
 
   return (
     <ThemeProvider>
-      <div className="flex h-screen">
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
+      <div className="flex h-screen overflow-hidden">
+        <AdminSidebar />
+        <div className="flex flex-col flex-1">
           <Header />
-
-          {/* Page Content */}
-          <main className="flex-1 p-6 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-950">
             {children}
           </main>
         </div>
