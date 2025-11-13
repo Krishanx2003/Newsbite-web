@@ -1,8 +1,6 @@
-// src/app/layout.tsx
 import './globals.css';
 import { Montserrat, Inter, Fredoka } from 'next/font/google';
 import type { Metadata } from 'next';
-
 import Script from 'next/script';
 
 // ✅ Fonts
@@ -38,7 +36,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://www.newsbite.in/',
   },
-
   openGraph: {
     title: 'NewsBite - Latest News and Updates',
     description:
@@ -56,7 +53,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-
   twitter: {
     card: 'summary_large_image',
     site: '@newsbite_in',
@@ -66,7 +62,6 @@ export const metadata: Metadata = {
       'Stay updated with breaking stories, global insights, and trending topics from NewsBite.',
     images: ['/og-default.jpg'],
   },
-
   robots: {
     index: true,
     follow: true,
@@ -78,10 +73,7 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-
   authors: [{ name: 'NewsBite', url: 'https://www.newsbite.in/' }],
-
-  // ✅ Social Media Profiles for Knowledge Panel and SEO
   other: {
     'og:see_also': [
       'https://x.com/newsbite_in',
@@ -97,10 +89,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        {/* ✅ Google AdSense */}
-    
+        {/* ✅ Google AdSense Verification Script */}
+        <Script
+          id="google-adsense"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5036462410327359"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
 
-        {/* ✅ JSON-LD Structured Data for better SEO */}
+        {/* ✅ JSON-LD Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -125,9 +123,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-background text-foreground font-sans`}
         suppressHydrationWarning
       >
-
-          {children}
-
+        {children}
       </body>
     </html>
   );
