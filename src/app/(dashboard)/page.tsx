@@ -5,7 +5,7 @@ import { PersonalizationCard } from "./articles/_components/PersonalizationCard"
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import { createClient } from '@/lib/server';
-import AdContainer from '@/components/AdContainer';
+
 
 // Article type matching API schema
 type Article = {
@@ -121,15 +121,7 @@ export default async function Home() {
               articles={articles.slice(0, 3)}
             />
 
-            {/* Middle Ad - Only show if we have content */}
-            {articles.length >= 3 && (
-              <AdContainer
-                position="middle"
-                className="my-8"
-                hasContent={articles.length >= 3}
-              />
-            )}
-
+           
             <ArticleGrid
               articles={articles.slice(3, 6)}
             />
