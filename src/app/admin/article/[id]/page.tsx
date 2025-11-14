@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getSEOMetadataByPath } from '@/lib/supabase/seo';
-import SEO from '@/components/SEO';
+
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -44,17 +44,7 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <SEO
-        title={seoData?.title}
-        description={seoData?.description}
-        keywords={seoData?.keywords}
-        ogType="article"
-        ogImage={seoData?.og_image}
-        articlePublishedTime={seoData?.article_published_time}
-        articleModifiedTime={seoData?.article_modified_time}
-        articleAuthor={seoData?.article_author}
-        canonicalUrl={`https://newsbite.in${path}`}
-      />
+    
       {/* Article content */}
     </>
   );
