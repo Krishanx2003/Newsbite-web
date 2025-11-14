@@ -16,7 +16,7 @@ export default function Header() {
       <div className="flex-1 max-w-md">
         <input
           type="text"
-          placeholder="Search content, users... anything"
+          placeholder="Search content, users..."
           className="w-full p-2 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-hot-pink"
         />
       </div>
