@@ -3,7 +3,6 @@ import { createClient } from '@/lib/server';
 
 import Header from './_components/Header';
 import { AdminSidebar } from './_components/AdminSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();

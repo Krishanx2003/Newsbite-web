@@ -32,7 +32,7 @@ const navItems = [
   { name: "Insight", href: "/admin/insights", icon: CurrencyDollarIcon },
 ]
 
-export function AppSidebar() {
+export function AdminSidebar() {
   const pathname = usePathname()
 
   return (
@@ -80,3 +80,5 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
+
+export default AdminSidebar
