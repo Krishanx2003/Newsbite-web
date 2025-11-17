@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Profile } from '@/types/profile';
 import { createClient } from '@/lib/client';
+import { ChevronRight, Loader2, AlertCircle } from 'lucide-react';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -115,23 +116,32 @@ export default function ProfilePage() {
 
   if (loading && !profile) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-off-white dark:bg-near-black">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-900 to-slate-950">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-amber-500 mx-auto mb-4" />
+          <p className="text-slate-300 text-sm tracking-wide">Loading profile</p>
+        </div>
       </div>
     );
   }
 
   if (error && !editMode) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-off-white dark:bg-near-black">
-        <div className="bg-white dark:bg-gray-800 border border-coral-500/20 text-coral-500 px-4 py-3 rounded-xl shadow-md">
-          <p className="text-sm font-inter">{error}</p>
-          <button
-            onClick={fetchProfile}
-            className="mt-2 px-4 py-2 bg-blue-600 text-white font-fredoka rounded-md hover:bg-blue-600/80 transition-transform duration-200 hover:scale-105"
-          >
-            Retry
-          </button>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 px-4">
+        <div className="max-w-md w-full bg-slate-800/50 border border-amber-500/30 rounded-lg p-6 backdrop-blur">
+          <div className="flex gap-3 mb-4">
+            <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="text-slate-100 font-medium mb-2">Error Loading Profile</h3>
+              <p className="text-sm text-slate-300 mb-4">{error}</p>
+              <button
+                onClick={fetchProfile}
+                className="px-4 py-2 bg-amber-500 text-slate-900 text-sm font-medium rounded hover:bg-amber-400 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -142,34 +152,44 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-off-white dark:bg-near-black py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden md:max-w-2xl transition-opacity duration-300">
-        <div className="p-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-montserrat font-bold text-gray-800 dark:text-gray-200">Your Profile</h1>
-            <button
-              onClick={handleSignOut}
-              className="text-sm font-inter text-coral-500 hover:text-coral-500/80 transition-colors"
-            >
-              Sign Out
-            </button>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-2">
+          <div>
+            <p className="text-amber-500 text-xs font-semibold tracking-widest uppercase">Contributor Portal</p>
+            <h1 className="text-4xl font-bold text-slate-100 mt-2">Newsbite Profile</h1>
           </div>
+          <button
+            onClick={handleSignOut}
+            className="text-sm text-slate-400 hover:text-amber-500 transition-colors font-medium"
+          >
+            Sign Out
+          </button>
+        </div>
+        <div className="h-1 w-12 bg-gradient-to-r from-amber-500 to-orange-400 rounded-full mt-4" />
+      </div>
 
-          <div className="mt-6">
-            {profile?.avatar_url && (
-              <div className="flex justify-center mb-6">
-                <img
-                  src={profile.avatar_url}
-                  alt="Profile"
-                  className="h-24 w-24 rounded-full object-cover"
-                />
-              </div>
-            )}
+      <div className="max-w-2xl">
+        {/* Profile Card */}
+        <div className="bg-slate-800/40 backdrop-blur border border-slate-700/50 rounded-lg overflow-hidden mb-8">
+          {/* Avatar Section */}
+          {profile?.avatar_url && (
+            <div className="h-32 bg-gradient-to-r from-amber-500/10 to-orange-500/10 flex items-center justify-center border-b border-slate-700/50">
+              <img
+                src={profile.avatar_url || "/placeholder.svg"}
+                alt="Profile"
+                className="h-24 w-24 rounded-full object-cover ring-2 ring-amber-500/30"
+              />
+            </div>
+          )}
 
+          {/* Content Section */}
+          <div className="p-8">
             {editMode ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
-                  <label htmlFor="displayName" className="block text-sm font-inter font-medium text-gray-700 dark:text-gray-200">
+                  <label htmlFor="displayName" className="block text-xs font-semibold text-amber-500 uppercase tracking-widest mb-3">
                     Display Name
                   </label>
                   <input
@@ -177,17 +197,18 @@ export default function ProfilePage() {
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-600 focus:border-blue-600 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800"
+                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 transition-colors"
+                    placeholder="Enter your display name"
                   />
                 </div>
 
-                <div className="flex space-x-2">
+                <div className="flex gap-3">
                   <button
                     onClick={handleSave}
                     disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white font-fredoka rounded-md hover:bg-blue-600/80 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 transition-transform duration-200 hover:scale-105"
+                    className="flex-1 px-4 py-3 bg-amber-500 text-slate-900 font-semibold rounded-lg hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                   >
-                    {loading ? 'Saving...' : 'Save Changes'}
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Save Changes</span>}
                   </button>
                   <button
                     onClick={() => {
@@ -195,54 +216,68 @@ export default function ProfilePage() {
                       setDisplayName(profile?.display_name || '');
                       setError(null);
                     }}
-                    className="px-4 py-2 border-coral-500 text-coral-500 hover:bg-coral-500 hover:text-white font-fredoka rounded-md focus:outline-none focus:ring-2 focus:ring-coral-500 focus:ring-offset-2 transition-transform duration-200 hover:scale-105"
+                    className="px-4 py-3 border border-slate-600/50 text-slate-300 font-medium rounded-lg hover:border-slate-500 hover:bg-slate-700/50 transition-colors"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Profile Info */}
                 <div>
-                  <h2 className="text-lg font-montserrat font-bold text-gray-800 dark:text-gray-200">Information</h2>
-                  <div className="mt-2">
-                    <p className="text-sm font-inter text-gray-700 dark:text-gray-300">
-                      Email: {user.email}
-                    </p>
-                    <p className="text-sm font-inter text-gray-700 dark:text-gray-300">
-                      Display Name: {profile?.display_name || 'Not set'}
-                    </p>
+                  <h2 className="text-xs font-semibold text-amber-500 uppercase tracking-widest mb-4">Account Information</h2>
+                  <div className="space-y-4">
+                    <div className="pb-4 border-b border-slate-700/50">
+                      <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Email Address</p>
+                      <p className="text-slate-100 font-medium">{user.email}</p>
+                    </div>
+                    <div className="pb-4 border-b border-slate-700/50">
+                      <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Display Name</p>
+                      <p className="text-slate-100 font-medium">{profile?.display_name || 'Not configured'}</p>
+                    </div>
                     {profile?.updated_at && (
-                      <p className="text-sm font-inter text-gray-700 dark:text-gray-300">
-                        Last updated: {new Date(profile.updated_at).toLocaleString()}
-                      </p>
+                      <div>
+                        <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Last Updated</p>
+                        <p className="text-slate-100 text-sm">{new Date(profile.updated_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="px-4 py-2 bg-blue-600 text-white font-fredoka rounded-md hover:bg-blue-600/80 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-transform duration-200 hover:scale-105"
-                >
-                  Edit Profile
-                </button>
-
+                {/* Setup Prompt */}
                 {!profile?.display_name && (
-                  <div className="mt-4 p-3 bg-white dark:bg-gray-800 border-l-4 border-teal-500">
-                    <p className="text-sm font-inter text-gray-700 dark:text-gray-300">
-                      Welcome! Please set up your profile by adding a display name.
+                  <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-lg p-4">
+                    <p className="text-sm text-slate-300">
+                      <span className="text-amber-500 font-semibold">Complete your profile</span> — Add a display name to get started with Newsbite.
                     </p>
                   </div>
                 )}
+
+                {/* Edit Button */}
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="w-full px-4 py-3 bg-amber-500 text-slate-900 font-semibold rounded-lg hover:bg-amber-400 transition-all flex items-center justify-center gap-2 group"
+                >
+                  <span>Edit Profile</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </button>
               </div>
             )}
 
+            {/* Error Message */}
             {error && editMode && (
-              <div className="mt-4 p-3 bg-white dark:bg-gray-800 border-l-4 border-coral-500">
-                <p className="text-sm font-inter text-coral-500">{error}</p>
+              <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex gap-3">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-300">{error}</p>
               </div>
             )}
           </div>
+        </div>
+
+        {/* Footer Info */}
+        <div className="text-center text-xs text-slate-500">
+          <p>Newsbite Contributor Portal • Manage your profile and credentials</p>
         </div>
       </div>
     </div>
