@@ -2,6 +2,9 @@ import './globals.css';
 import { Montserrat, Inter, Fredoka } from 'next/font/google';
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Toaster } from 'sonner';
+
+import { NotificationProvider } from '@/components/providers/NotificationProvider';
 
 // ✅ Fonts
 const montserrat = Montserrat({
@@ -123,7 +126,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         className={`${montserrat.variable} ${inter.variable} ${fredokaOne.variable} antialiased bg-background text-foreground font-sans`}
         suppressHydrationWarning
       >
-        {children}
+        <NotificationProvider>
+          {children}
+          <Toaster />
+        </NotificationProvider>
       </body>
     </html>
   );
