@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaArrowLeft, FaArrowRight, FaSearch, FaBookmark } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import Image from 'next/image';
 
 // Define Article type matching API schema
@@ -34,12 +34,22 @@ export default function ArticlesPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const articlesPerPage = 6;
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Fetch articles
   useEffect(() => {
@@ -51,13 +61,22 @@ export default function ArticlesPage() {
         const params = new URLSearchParams({
           page: page.toString(),
           limit: articlesPerPage.toString(),
-          ...(selectedCategory && { category: selectedCategory }),
-          ...(searchQuery && { search: searchQuery }),
         });
-        const response = await fetch(`/api/articles?${params}`);
+
+        if (selectedCategory && selectedCategory !== 'All Categories') {
+          params.append('category', selectedCategory);
+        }
+
+        if (debouncedSearchQuery) {
+          params.append('search', debouncedSearchQuery);
+        }
+
+        const response = await fetch(`/api/articles?${params.toString()}`);
+
         if (!response.ok) {
           throw new Error(`Failed to fetch articles: ${response.status}`);
         }
+
         const data: ArticlesResponse = await response.json();
 
         // Validate response
@@ -68,17 +87,24 @@ export default function ArticlesPage() {
         setArticles(data.articles);
         setTotalPages(data.totalPages || 1);
 
-        // Extract unique categories
-        const uniqueCategories = [...new Set(data.articles.map((a) => a.category))];
-        setCategories(uniqueCategories);
+        // Only set categories if we haven't filtered yet, or if we want to accumulate them.
+        if (!selectedCategory && !debouncedSearchQuery && data.articles.length > 0) {
+          const uniqueCategories = Array.from(new Set(data.articles.map((a: Article) => a.category)));
+          setCategories(prev => {
+            const newCats = Array.from(new Set([...prev, ...uniqueCategories]));
+            return newCats.sort();
+          });
+        }
+
       } catch (err) {
+        console.error('Error fetching articles:', err);
         setError(err instanceof Error ? err.message : 'Failed to load articles');
       } finally {
         setIsLoading(false);
       }
     };
     fetchArticles();
-  }, [page, selectedCategory, searchQuery]);
+  }, [page, selectedCategory, debouncedSearchQuery]);
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -87,6 +113,8 @@ export default function ArticlesPage() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Immediate search on submit
+    setDebouncedSearchQuery(searchQuery);
     setPage(1);
   };
 
@@ -97,7 +125,7 @@ export default function ArticlesPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading && articles.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
@@ -128,8 +156,6 @@ export default function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
-
-
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-red-600 to-purple-600 text-white">
         <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center md:text-left">
@@ -226,7 +252,7 @@ export default function ArticlesPage() {
                     <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-medium rounded-full text-xs">
                       {articles[0].category}
                     </span>
-                    <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">
+                    <span className="ml-3 text-sm text-gray-500 dark:text-gray-400" suppressHydrationWarning>
                       {new Date(articles[0].date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -298,12 +324,13 @@ export default function ArticlesPage() {
                       height={32}
                       className="rounded-full"
                     />
-                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                      {article.author_name}
-                    </span>
+                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">{article.author_name}</span>
                   </div>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {article.read_time}
+                  <span className="text-xs text-gray-500 dark:text-gray-400" suppressHydrationWarning>
+                    {new Date(article.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
                   </span>
                 </div>
               </div>
@@ -311,87 +338,56 @@ export default function ArticlesPage() {
           ))}
         </div>
 
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-12 flex justify-center items-center space-x-4">
+            <button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+              className={`p-2 rounded-full ${page === 1
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors'
+                }`}
+            >
+              <FaArrowLeft />
+            </button>
+            <span className="text-gray-700 dark:text-gray-300 font-inter">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+              className={`p-2 rounded-full ${page === totalPages
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors'
+                }`}
+            >
+              <FaArrowRight />
+            </button>
+          </div>
+        )}
+
         {/* Empty State */}
-        {articles.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
-            <div className="text-4xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">No articles found</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              We couldn't find any articles matching your search criteria.
+        {!isLoading && articles.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">No articles found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              We couldn't find any articles matching your search or filters.
             </p>
             <button
               onClick={() => {
-                setSelectedCategory('');
                 setSearchQuery('');
+                setDebouncedSearchQuery('');
+                setSelectedCategory('');
                 setPage(1);
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Clear filters
             </button>
           </div>
         )}
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-16 flex justify-center">
-            <div className="inline-flex items-center rounded-lg shadow-sm bg-white dark:bg-gray-800 overflow-hidden">
-              <button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                className="px-4 py-2 border-r border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 disabled:text-gray-400 dark:disabled:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:hover:bg-white dark:disabled:hover:bg-gray-800 disabled:cursor-not-allowed"
-              >
-                <FaArrowLeft size={16} />
-              </button>
-
-              {Array.from({ length: totalPages }).map((_, idx) => {
-                const pageNum = idx + 1;
-                // Only show nearby pages and first/last page
-                if (
-                  pageNum === 1 ||
-                  pageNum === totalPages ||
-                  (pageNum >= page - 1 && pageNum <= page + 1)
-                ) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`w-10 h-10 flex items-center justify-center border-r border-gray-200 dark:border-gray-700 text-sm font-medium ${page === pageNum
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                } else if (
-                  (pageNum === 2 && page > 3) ||
-                  (pageNum === totalPages - 1 && page < totalPages - 2)
-                ) {
-                  // Show ellipsis
-                  return (
-                    <span
-                      key={pageNum}
-                      className="w-10 h-10 flex items-center justify-center border-r border-gray-200 dark:border-gray-700 text-gray-400"
-                    >
-                      …
-                    </span>
-                  );
-                }
-                return null;
-              })}
-
-              <button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === totalPages}
-                className="px-4 py-2 text-gray-600 dark:text-gray-300 disabled:text-gray-400 dark:disabled:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:hover:bg-white dark:disabled:hover:bg-gray-800 disabled:cursor-not-allowed"
-              >
-                <FaArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-        )}
-
       </main>
     </div>
   );

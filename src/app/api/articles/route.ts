@@ -2,6 +2,8 @@ import { createClient } from '@/lib/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
+export const dynamic = 'force-dynamic';
+
 const articleSchema = z.object({
   title: z.string().min(1, 'Title is required').trim(),
   subtitle: z.string().min(1, 'Subtitle is required').trim(),

@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { createClient } from '@/lib/client';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface Article {
   id: string;
@@ -156,16 +157,18 @@ export default function ArticleDetailPage() {
     );
   }
 
+  const sanitizedContent = DOMPurify.sanitize(article.content);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
         <div className="max-w-container mx-auto px-6 lg:px-18 py-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" size="sm" className="gap-2" onClick={() => router.push('/articles')}>
+            <Link href="/articles" className="inline-flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
               <ArrowLeft className="h-4 w-4" />
               Back
-            </Button>
+            </Link>
             <div className="text-sm text-muted-foreground">
               {article.category}
             </div>
@@ -178,30 +181,30 @@ export default function ArticleDetailPage() {
         className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-gray-800 to-gray-900 backdrop-blur-lg border rounded-full px-6 py-3 shadow-xl transition-all duration-500 ease-in-out ${showFloatingBar ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
           }`}
       >
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 text-white">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLike}
-            className={`gap-2 ${isLiked ? 'text-red-500' : ''}`}
+            className={`gap-2 hover:text-white hover:bg-white/10 ${isLiked ? 'text-red-500 hover:text-red-400' : 'text-white'}`}
           >
             <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
-            284
+            <span className="hidden sm:inline">284</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleSave}
-            className={`gap-2 ${isBookmarked ? 'text-primary' : ''}`}
+            className={`gap-2 hover:text-white hover:bg-white/10 ${isBookmarked ? 'text-blue-400 hover:text-blue-300' : 'text-white'}`}
           >
             <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
           </Button>
-          <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2">
+          <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2 text-white hover:text-white hover:bg-white/10">
             {copied ? <Check className="h-5 w-5" /> : <Share2 className="h-5 w-5" />}
           </Button>
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 text-white hover:text-white hover:bg-white/10">
             <MessageCircle className="h-5 w-5" />
-            42
+            <span className="hidden sm:inline">42</span>
           </Button>
         </div>
       </div>
@@ -258,7 +261,7 @@ export default function ArticleDetailPage() {
                       <span className="text-sm text-muted-foreground">Staff Writer</span>
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{formatDate(article.date)}</span>
+                      <span suppressHydrationWarning>{formatDate(article.date)}</span>
                       <span>•</span>
                       <span>{article.read_time}</span>
                     </div>
@@ -288,7 +291,7 @@ export default function ArticleDetailPage() {
             {/* Article Body */}
             <div className="prose prose-lg dark:prose-invert animate-fade-in font-sans">
               <div className="text-xl leading-loose mb-8 first-letter:text-6xl first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-primary">
-                <div dangerouslySetInnerHTML={{ __html: article.content }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
                 {/* Pull Quote */}
                 <blockquote className="border-l-4 border-primary pl-6 py-4 my-8 italic text-muted-foreground">
                   "This is a pull quote to highlight an important point in the article, adding visual interest."
