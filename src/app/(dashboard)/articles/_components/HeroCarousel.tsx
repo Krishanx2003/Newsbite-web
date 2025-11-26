@@ -4,16 +4,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-type Article = {
-  id: string;
-  title: string;
-  subtitle: string;
-  image_url: string;
-  image_alt_text?: string;
-  category: string;
-  slug: string;
-  status: "draft" | "publish" | "scheduled";
-};
+import { Article } from "@/types/article";
 
 interface HeroCarouselProps {
   articles: Article[] | undefined;

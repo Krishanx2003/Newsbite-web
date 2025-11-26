@@ -90,7 +90,7 @@ export const metadata: Metadata = {
 // ✅ Root Layout
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         {/* ✅ Google AdSense Verification Script */}
         <Script

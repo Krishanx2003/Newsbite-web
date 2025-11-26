@@ -29,6 +29,9 @@ export interface Article {
   content: string;
   tags: string[];
   image_url: string;
+  image_alt_text?: string;
+  slug: string;
+  status: "draft" | "publish" | "scheduled";
   // Add any other optional fields if needed
   [key: string]: any; // This allows for additional properties if your articles vary
 }

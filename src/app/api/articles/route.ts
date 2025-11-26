@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Fetch articles error:', error);
-      return NextResponse.json({ error: 'Failed to fetch articles' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to fetch articles', details: error }, { status: 500 });
     }
 
     const totalPages = Math.ceil((count || 0) / limit);
@@ -131,7 +131,10 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     console.error('GET articles error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
